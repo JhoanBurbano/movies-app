@@ -121,6 +121,18 @@ export async function fetchUpcomingMovies(
 }
 
 /**
+ * Fetches top rated movies
+ */
+export async function fetchTopRatedMovies(
+  page: number = 1
+): Promise<TMDBMoviesResponseDTO> {
+  const url = `${TMDB_ENDPOINTS.TOP_RATED}?api_key=${API_KEY}&page=${page}`;
+  logger.debug('Fetching top rated movies', { page });
+  const response = await fetchWithTimeout(url);
+  return handleResponse<TMDBMoviesResponseDTO>(response);
+}
+
+/**
  * Searches for movies
  */
 export async function searchMovies(

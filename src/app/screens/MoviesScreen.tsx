@@ -15,6 +15,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMovies } from '../../hooks/useMovies';
 import { useDebounce } from '../../hooks/useDebounce';
 import { MovieCard } from '../components/MovieCard';
+import { TopRatedCard } from '../components/TopRatedCard';
 import { SectionHeader } from '../components/SectionHeader';
 import { ErrorState } from '../components/ErrorState';
 import { EmptyState } from '../components/EmptyState';
@@ -37,6 +38,7 @@ export function MoviesScreen() {
     const {
         popular,
         upcoming,
+        topRated,
         searchResults,
         loading,
         error,
@@ -70,24 +72,41 @@ export function MoviesScreen() {
         [handleMoviePress]
     );
 
-    const renderSection = useCallback(
-        (title: string, movies: Movie[]) => (
-            <View>
-                <SectionHeader title={title} />
-                <FlatList
-                    data={movies}
-                    renderItem={renderMovie}
-                    keyExtractor={(item) => item.id.toString()}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.listContent}
-                    initialNumToRender={5}
-                    windowSize={5}
-                    removeClippedSubviews
-                />
-            </View>
+    const renderTopRatedMovie = useCallback(
+        ({ item, index }: { item: Movie; index: number }) => (
+            <TopRatedCard 
+                movie={item} 
+                rank={index + 1} 
+                onPress={handleMoviePress} 
+            />
         ),
-        [renderMovie, styles.listContent]
+        [handleMoviePress]
+    );
+
+    const renderSection = useCallback(
+        (title: string, movies: Movie[], isTopRated: boolean = false) => {
+            if (movies.length === 0) {
+                return null;
+            }
+            
+            return (
+                <View>
+                    <SectionHeader title={title} />
+                    <FlatList
+                        data={movies}
+                        renderItem={isTopRated ? renderTopRatedMovie : renderMovie}
+                        keyExtractor={(item) => item.id.toString()}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.listContent}
+                        initialNumToRender={isTopRated ? 5 : 5}
+                        windowSize={isTopRated ? 5 : 5}
+                        removeClippedSubviews
+                    />
+                </View>
+            );
+        },
+        [renderMovie, renderTopRatedMovie, styles.listContent]
     );
 
     const renderSearchResults = useMemo(() => {
@@ -146,7 +165,7 @@ export function MoviesScreen() {
     }
 
 
-    if (loading && !refreshing && popular.length === 0) {
+    if (loading && !refreshing && popular.length === 0 && topRated.length === 0) {
         return (<View style={styles.container}>
             <LoadingSkeleton count={5} />
         </View>);
@@ -169,15 +188,25 @@ export function MoviesScreen() {
             ) : (
                 <FlatList
                     data={[
-                        { type: 'popular', movies: popular },
-                        { type: 'upcoming', movies: upcoming },
+                        { type: 'popular', movies: popular, isTopRated: false },
+                        { type: 'topRated', movies: topRated, isTopRated: true },
+                        { type: 'upcoming', movies: upcoming, isTopRated: false },
                     ]}
-                    renderItem={({ item }) =>
-                        renderSection(
-                            item.type === 'popular' ? 'Popular' : 'Upcoming',
-                            item.movies
-                        )
-                    }
+                    renderItem={({ item }) => {
+                        let title = '';
+                        switch (item.type) {
+                            case 'popular':
+                                title = 'Popular';
+                                break;
+                            case 'topRated':
+                                title = 'Top Rated';
+                                break;
+                            case 'upcoming':
+                                title = 'Upcoming';
+                                break;
+                        }
+                        return renderSection(title, item.movies, item.isTopRated);
+                    }}
                     keyExtractor={(item) => item.type}
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={refresh} />

@@ -8,6 +8,7 @@ const BASE_URL =
 export const TMDB_ENDPOINTS = {
   POPULAR: `${BASE_URL}/movie/popular`,
   UPCOMING: `${BASE_URL}/movie/upcoming`,
+  TOP_RATED: `${BASE_URL}/movie/top_rated`,
   SEARCH: `${BASE_URL}/search/movie`,
   MOVIE_DETAIL: (id: number) => `${BASE_URL}/movie/${id}`,
 } as const;

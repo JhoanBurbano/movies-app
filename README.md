@@ -15,7 +15,7 @@ A React Native mobile application built with Expo SDK 54 that displays Popular a
 
 ## Prerequisites
 
-- Node.js 20+ 
+- Node.js 22+ 
 - npm or yarn
 - Expo CLI (installed globally or via npx)
 - TMDB API key ([Get one here](https://www.themoviedb.org/settings/api))

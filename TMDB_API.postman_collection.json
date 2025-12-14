@@ -1,0 +1,234 @@
+{
+	"info": {
+		"_postman_id": "tmdb-api-collection",
+		"name": "TMDB API - MovieX App",
+		"description": "Collection of all TMDB API requests used in the MovieX application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Movies",
+			"item": [
+				{
+					"name": "Get Popular Movies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/movie/popular?api_key={{api_key}}&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"movie",
+								"popular"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{api_key}}",
+									"description": "TMDB API Key"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								}
+							]
+						},
+						"description": "Fetches a list of popular movies from TMDB. Returns paginated results with movie information including poster, title, rating, and release date."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Upcoming Movies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/movie/upcoming?api_key={{api_key}}&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"movie",
+								"upcoming"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{api_key}}",
+									"description": "TMDB API Key"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								}
+							]
+						},
+						"description": "Fetches a list of upcoming movies from TMDB. Returns paginated results with movies that are scheduled to be released soon."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Top Rated Movies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/movie/top_rated?api_key={{api_key}}&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"movie",
+								"top_rated"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{api_key}}",
+									"description": "TMDB API Key"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								}
+							]
+						},
+						"description": "Fetches a list of top rated movies from TMDB. Returns paginated results ordered by rating. This endpoint is equivalent to a discover call with specific filters."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Movie Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/movie/{{movie_id}}?api_key={{api_key}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"movie",
+								"{{movie_id}}"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{api_key}}",
+									"description": "TMDB API Key"
+								}
+							]
+						},
+						"description": "Fetches detailed information about a specific movie by ID. Returns comprehensive data including overview, genres, runtime, language, and other metadata."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for fetching movie data from TMDB"
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search Movies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/search/movie?api_key={{api_key}}&query={{search_query}}&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"search",
+								"movie"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{api_key}}",
+									"description": "TMDB API Key"
+								},
+								{
+									"key": "query",
+									"value": "{{search_query}}",
+									"description": "Search query string (URL encoded)"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								}
+							]
+						},
+						"description": "Searches for movies by query string. Returns paginated results matching the search term. The query is automatically URL encoded in the app."
+					},
+					"response": []
+				}
+			],
+			"description": "Search endpoints for finding movies"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.themoviedb.org/3",
+			"type": "string",
+			"description": "TMDB API base URL"
+		},
+		{
+			"key": "api_key",
+			"value": "YOUR_TMDB_API_KEY_HERE",
+			"type": "string",
+			"description": "Your TMDB API key. Get one at https://www.themoviedb.org/settings/api"
+		},
+		{
+			"key": "movie_id",
+			"value": "550",
+			"type": "string",
+			"description": "Example movie ID (Fight Club). Replace with any valid movie ID."
+		},
+		{
+			"key": "search_query",
+			"value": "inception",
+			"type": "string",
+			"description": "Example search query. Replace with your search term."
+		}
+	]
+}
+
