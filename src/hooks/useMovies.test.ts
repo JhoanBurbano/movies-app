@@ -2,7 +2,10 @@
  * Tests for useMovies hook
  */
 
-import { renderHook, waitFor } from '@testing-library/react-native';
+// Set mock API key before importing
+process.env.EXPO_PUBLIC_TMDB_API_KEY = 'test_api_key';
+
+import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { useMovies } from './useMovies';
 import {
   fetchPopularMovies,
@@ -152,16 +155,44 @@ describe('useMovies', () => {
   });
 
   it('should clear search results when clearSearch is called', async () => {
+    mockSearchMovies.mockResolvedValue({
+      page: 1,
+      results: [
+        {
+          id: 1,
+          title: 'Test Movie',
+          poster_path: '/test.jpg',
+          backdrop_path: null,
+          overview: 'Test overview',
+          vote_average: 8.0,
+          vote_count: 100,
+          release_date: '2023-01-01',
+        },
+      ],
+      total_pages: 1,
+      total_results: 1,
+    });
+
     const { result } = renderHook(() => useMovies());
 
+    // Wait for initial load
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
     // Set some search results
-    await result.current.search('test');
+    await act(async () => {
+      await result.current.search('test');
+    });
 
     await waitFor(() => {
       expect(result.current.searchResults.length).toBeGreaterThan(0);
     });
 
-    result.current.clearSearch();
+    // Clear search
+    act(() => {
+      result.current.clearSearch();
+    });
 
     expect(result.current.searchResults).toEqual([]);
   });

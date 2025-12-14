@@ -8,6 +8,7 @@ import { mapTMDBMovieToMovie } from '../domain/movie/movie.mapper';
 import type { Movie } from '../domain/movie/movie.types';
 import { TMDBError, getUserFriendlyMessage } from '../infrastructure/api/tmdb.errors';
 import { logger } from '../utils/logger';
+import { useNetworkStatus } from './useNetworkStatus';
 
 interface UseMoviesState {
   popular: Movie[];
@@ -29,6 +30,7 @@ interface UseMoviesReturn extends UseMoviesState {
  * Hook to fetch and manage popular and upcoming movies
  */
 export function useMovies(): UseMoviesReturn {
+  const { isConnected } = useNetworkStatus();
   const [state, setState] = useState<UseMoviesState>({
     popular: [],
     upcoming: [],
@@ -39,6 +41,16 @@ export function useMovies(): UseMoviesReturn {
   });
 
   const fetchMovies = useCallback(async (isRefresh = false) => {
+    if (!isConnected) {
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        refreshing: false,
+        error: 'No internet connection. Please check your network.',
+      }));
+      return;
+    }
+
     try {
       setState((prev) => ({
         ...prev,
@@ -86,6 +98,16 @@ export function useMovies(): UseMoviesReturn {
       return;
     }
 
+    if (!isConnected) {
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        error: 'No internet connection. Please check your network.',
+        searchResults: [],
+      }));
+      return;
+    }
+
     try {
       setState((prev) => ({
         ...prev,
@@ -93,7 +115,7 @@ export function useMovies(): UseMoviesReturn {
         error: null,
       }));
 
-      const response = await searchMovies(query);
+      const response = await searchMovies(query, 1);
       const results = response.results.map(mapTMDBMovieToMovie);
 
       setState((prev) => ({
@@ -129,7 +151,7 @@ export function useMovies(): UseMoviesReturn {
 
   useEffect(() => {
     fetchMovies(false);
-  }, [fetchMovies]);
+  }, [fetchMovies, isConnected]);
 
   return {
     ...state,

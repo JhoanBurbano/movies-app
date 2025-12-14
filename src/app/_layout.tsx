@@ -9,7 +9,9 @@ import { StatusBar } from 'expo-status-bar';
 import { RootTabs } from './navigation/RootTabs';
 import { useTheme } from '../ui/theme/theme';
 import { ThemeProvider } from '../ui/theme/ThemeContext';
-import { StyleSheet } from 'react-native';
+import { useSyncQueue } from '../hooks/useSyncQueue';
+import { NetworkStatusIndicator } from './components/NetworkStatusIndicator';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
@@ -22,21 +24,30 @@ export default function RootLayout() {
 
 function AppContent() {
     const theme = useTheme();
-
+    // Initialize sync queue processing
+    useSyncQueue();
+    const styles = createStyles(theme);
     return (
         <SafeAreaProvider>
             <GestureHandlerRootView style={styles.container}>
                 <NavigationContainer>
                     <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-                    <RootTabs />
+                    <View style={styles.content}>
+                        <NetworkStatusIndicator />
+                        <RootTabs />
+                    </View>
                 </NavigationContainer>
             </GestureHandlerRootView>
         </SafeAreaProvider>
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ReturnType<typeof useTheme>) => StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: theme.colors.background,
+    },
+    content: {
         flex: 1,
     },
 });

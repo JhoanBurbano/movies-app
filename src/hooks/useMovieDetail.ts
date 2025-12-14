@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { fetchMovieDetail } from '../infrastructure/api/tmdb.client';
 import { mapTMDBMovieDetailToMovie } from '../domain/movie/movie.mapper';
 import type { Movie } from '../domain/movie/movie.types';
-import { TMDBError, getUserFriendlyMessage } from '../infrastructure/api/tmdb.errors';
+import { TMDBError, TMDBErrorCode, getUserFriendlyMessage } from '../infrastructure/api/tmdb.errors';
 import { logger } from '../utils/logger';
 import {
   getSavedMovieById,
@@ -10,6 +10,9 @@ import {
   removeMovie as removeMovieFromStorage,
 } from '../infrastructure/storage/savedMovies.storage';
 import { movieToSavedMovie, savedMovieToMovie } from '../domain/movie/movie.mapper';
+import { useNetworkStatus } from './useNetworkStatus';
+import { addToSyncQueue } from '../infrastructure/storage/syncQueue.storage';
+import { cacheImage } from '../infrastructure/storage/imageCache.storage';
 
 interface UseMovieDetailState {
   movie: Movie | null;
@@ -28,6 +31,7 @@ interface UseMovieDetailReturn extends UseMovieDetailState {
  * Supports offline mode by checking saved movies first
  */
 export function useMovieDetail(movieId: number): UseMovieDetailReturn {
+  const { isConnected } = useNetworkStatus();
   const [state, setState] = useState<UseMovieDetailState>({
     movie: null,
     loading: true,
@@ -54,36 +58,58 @@ export function useMovieDetail(movieId: number): UseMovieDetailReturn {
           loading: false,
         }));
         
-        // If we have saved data, try to refresh from API in background
-        // but don't block the UI or fail if network is unavailable
-        fetchMovieDetail(movieId)
-          .then((detail) => {
-            const freshMovie = mapTMDBMovieDetailToMovie(detail);
-            return getSavedMovieById(movieId).then((m) => ({
-              movie: freshMovie,
-              isSaved: !!m,
-            }));
-          })
-          .then(({ movie: freshMovie, isSaved: saved }) => {
-            setState((prev) => ({
-              ...prev,
-              movie: freshMovie,
-              isSaved: saved,
-            }));
-          })
-          .catch((apiError) => {
-            // Silently fail - we already have saved data displayed
-            logger.debug('Background API refresh failed, using saved data', {
-              error: apiError,
+        // If we have saved data and network is available, try to refresh from API in background
+        if (isConnected) {
+          fetchMovieDetail(movieId)
+            .then((detail) => {
+              const freshMovie = mapTMDBMovieDetailToMovie(detail);
+              // Cache poster image
+              if (freshMovie.posterUrl) {
+                cacheImage(freshMovie.posterUrl).catch(() => {
+                  // Silently fail
+                });
+              }
+              return getSavedMovieById(movieId).then((m) => ({
+                movie: freshMovie,
+                isSaved: !!m,
+              }));
+            })
+            .then(({ movie: freshMovie, isSaved: saved }) => {
+              setState((prev) => ({
+                ...prev,
+                movie: freshMovie,
+                isSaved: saved,
+              }));
+            })
+            .catch((apiError) => {
+              // Silently fail - we already have saved data displayed
+              logger.debug('Background API refresh failed, using saved data', {
+                error: apiError,
+              });
             });
-          });
+        }
         return; // Don't proceed with main API call if we have saved data
       }
 
       // No saved data - fetch from API
+      if (!isConnected) {
+        throw new TMDBError(
+          TMDBErrorCode.NETWORK_ERROR,
+          'No internet connection. Please check your network.'
+        );
+      }
+
       try {
         const detail = await fetchMovieDetail(movieId);
         const movie = mapTMDBMovieDetailToMovie(detail);
+        
+        // Cache poster image
+        if (movie.posterUrl) {
+          cacheImage(movie.posterUrl).catch(() => {
+            // Silently fail
+          });
+        }
+        
         const isSaved = await getSavedMovieById(movieId).then((m) => !!m);
 
         setState((prev) => ({
@@ -117,18 +143,49 @@ export function useMovieDetail(movieId: number): UseMovieDetailReturn {
 
     try {
       if (state.isSaved) {
-        await removeMovieFromStorage(movieId);
+        // Optimistic update
         setState((prev) => ({
           ...prev,
           isSaved: false,
         }));
+
+        try {
+          await removeMovieFromStorage(movieId);
+        } catch (error) {
+          // If offline, add to sync queue
+          if (!isConnected) {
+            await addToSyncQueue('remove_movie', movieId);
+            logger.debug('Added remove to sync queue', { movieId });
+          } else {
+            throw error;
+          }
+        }
       } else {
         const savedMovie = movieToSavedMovie(state.movie);
-        await saveMovieToStorage(savedMovie);
+        
+        // Optimistic update
         setState((prev) => ({
           ...prev,
           isSaved: true,
         }));
+
+        try {
+          await saveMovieToStorage(savedMovie);
+          // Cache poster image when saving
+          if (savedMovie.posterUrl) {
+            cacheImage(savedMovie.posterUrl).catch(() => {
+              // Silently fail
+            });
+          }
+        } catch (error) {
+          // If offline, add to sync queue
+          if (!isConnected) {
+            await addToSyncQueue('save_movie', movieId, savedMovie);
+            logger.debug('Added save to sync queue', { movieId });
+          } else {
+            throw error;
+          }
+        }
       }
     } catch (error) {
       logger.error('Failed to toggle save', { error, movieId });
@@ -138,7 +195,7 @@ export function useMovieDetail(movieId: number): UseMovieDetailReturn {
         isSaved: !prev.isSaved,
       }));
     }
-  }, [state.movie, state.isSaved, movieId]);
+  }, [state.movie, state.isSaved, movieId, isConnected]);
 
   useEffect(() => {
     fetchMovie();

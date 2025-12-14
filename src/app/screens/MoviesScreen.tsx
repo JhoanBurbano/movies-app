@@ -145,8 +145,11 @@ export function MoviesScreen() {
         return <ErrorState message={error} onRetry={retry} />;
     }
 
+
     if (loading && !refreshing && popular.length === 0) {
-        return <LoadingSkeleton count={5} />;
+        return (<View style={styles.container}>
+            <LoadingSkeleton count={5} />
+        </View>);
     }
 
     return (

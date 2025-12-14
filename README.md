@@ -123,11 +123,31 @@ RootTabs (Bottom Tabs)
 - If no saved data and API fails, shows error with retry option
 - This ensures saved movies are always viewable offline, even after app restart
 
+**Network Detection**:
+- Uses `@react-native-community/netinfo` to monitor connectivity
+- `useNetworkStatus` hook provides real-time network status
+- UI adapts based on connectivity (shows offline indicator, prevents API calls)
+
+**Image Caching**:
+- Movie posters are cached locally using `expo-file-system`
+- Images are downloaded and stored when online
+- Cached images are used automatically when offline
+- Cache persists across app restarts
+
+**Sync Queue**:
+- Operations (save/remove movies) are queued when offline
+- Queue is automatically processed when network becomes available
+- Retry mechanism with max retries to handle transient failures
+- Ensures data consistency even with intermittent connectivity
+
 **Trade-offs**:
 - ✅ Full offline support for saved movies
 - ✅ Graceful degradation when network unavailable
+- ✅ Image caching for offline viewing
+- ✅ Automatic sync when connectivity restored
 - ⚠️ Saved movies may become stale (no auto-refresh)
 - ⚠️ Storage limited by device capacity (not a concern for typical use)
+- ⚠️ Image cache grows over time (can be cleared manually)
 
 ### Error Handling Strategy
 
