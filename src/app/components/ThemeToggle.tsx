@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../ui/theme/theme';
 import { useThemeContext, type ThemeMode } from '../../ui/theme/ThemeContext';
 
@@ -13,27 +14,33 @@ export function ThemeToggle() {
   const { themeMode, setThemeMode } = useThemeContext();
   const styles = createStyles(theme);
 
-  const options: { mode: ThemeMode; label: string; icon: string }[] = [
-    { mode: 'system', label: 'System', icon: '⚙️' },
-    { mode: 'light', label: 'Light', icon: '☀️' },
-    { mode: 'dark', label: 'Dark', icon: '🌙' },
+  const options: { mode: ThemeMode; label: string; iconName: keyof typeof Ionicons.glyphMap }[] = [
+    { mode: 'system', label: 'System', iconName: 'phone-portrait-outline' },
+    { mode: 'light', label: 'Light', iconName: 'sunny-outline' },
+    { mode: 'dark', label: 'Dark', iconName: 'moon-outline' },
   ];
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Theme</Text>
       <View style={styles.optionsContainer}>
-        {options.map((option) => (
+        {options.map((option, index) => (
           <TouchableOpacity
             key={option.mode}
             style={[
               styles.option,
               themeMode === option.mode && styles.optionActive,
+              index > 0 && styles.optionSpacing,
             ]}
             onPress={() => setThemeMode(option.mode)}
             activeOpacity={0.7}
           >
-            <Text style={styles.optionIcon}>{option.icon}</Text>
+            <Ionicons
+              name={option.iconName}
+              size={18}
+              color={themeMode === option.mode ? '#FFFFFF' : theme.colors.text}
+              style={styles.optionIcon}
+            />
             <Text
               style={[
                 styles.optionText,
@@ -63,7 +70,6 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
     },
     optionsContainer: {
       flexDirection: 'row',
-      gap: theme.spacing.sm,
     },
     option: {
       flex: 1,
@@ -77,12 +83,14 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
       borderWidth: 1,
       borderColor: theme.colors.border,
     },
+    optionSpacing: {
+      marginLeft: theme.spacing.sm,
+    },
     optionActive: {
       backgroundColor: theme.colors.primary,
       borderColor: theme.colors.primary,
     },
     optionIcon: {
-      fontSize: 16,
       marginRight: theme.spacing.xs,
     },
     optionText: {

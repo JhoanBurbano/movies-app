@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../ui/theme/theme';
 import { useThemeContext } from '../../ui/theme/ThemeContext';
 import { ThemeToggle } from './ThemeToggle';
@@ -15,14 +16,14 @@ export function ThemeToggleButton() {
     const [modalVisible, setModalVisible] = useState(false);
     const styles = createStyles(theme);
 
-    const getIcon = () => {
+    const getIconName = (): keyof typeof Ionicons.glyphMap => {
         switch (themeMode) {
             case 'light':
-                return '☀️';
+                return 'sunny-outline';
             case 'dark':
-                return '🌙';
+                return 'moon-outline';
             default:
-                return '⚙️';
+                return 'phone-portrait-outline';
         }
     };
 
@@ -34,7 +35,7 @@ export function ThemeToggleButton() {
                 activeOpacity={0.7}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-                <Text style={styles.icon}>{getIcon()}</Text>
+                <Ionicons name={getIconName()} size={22} color={theme.colors.text} />
             </TouchableOpacity>
 
             <Modal
@@ -56,7 +57,7 @@ export function ThemeToggleButton() {
                                 activeOpacity={0.7}
                                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                             >
-                                <Text style={styles.closeButton}>✕</Text>
+                                <Ionicons name="close" size={24} color={theme.colors.textSecondary} />
                             </TouchableOpacity>
                         </View>
                         <ThemeToggle />
@@ -72,9 +73,6 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         button: {
             padding: theme.spacing.xs,
             marginRight: theme.spacing.sm,
-        },
-        icon: {
-            fontSize: 20,
         },
         modalOverlay: {
             flex: 1,
@@ -104,11 +102,6 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         modalTitle: {
             ...theme.typography.h3,
             color: theme.colors.text,
-        },
-        closeButton: {
-            fontSize: 24,
-            color: theme.colors.textSecondary,
-            lineHeight: 24,
         },
     });
 }

@@ -3,8 +3,8 @@
  */
 
 import React from 'react';
-import { Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../ui/theme/theme';
 import { MoviesStack } from './MoviesStack';
 import { SavedStack } from './SavedStack';
@@ -36,8 +36,8 @@ export function RootTabs() {
         component={MoviesStack}
         options={{
           title: 'Movies',
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="film" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="film" color={color} focused={focused} />
           ),
         }}
       />
@@ -46,8 +46,8 @@ export function RootTabs() {
         component={SavedStack}
         options={{
           title: 'Saved',
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="bookmark" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="bookmark" color={color} focused={focused} />
           ),
         }}
       />
@@ -55,13 +55,15 @@ export function RootTabs() {
   );
 }
 
-// Simple icon component (using text for simplicity)
-// In production, use react-native-vector-icons or similar
-function TabIcon({ name }: { name: string; color: string }) {
-  const iconMap: Record<string, string> = {
-    film: '🎬',
-    bookmark: '⭐',
+// Icon component using Expo Vector Icons
+function TabIcon({ name, color, focused }: { name: string; color: string; focused?: boolean }) {
+  const iconMap: Record<string, { outline: keyof typeof Ionicons.glyphMap; filled: keyof typeof Ionicons.glyphMap }> = {
+    film: { outline: 'film-outline', filled: 'film' },
+    bookmark: { outline: 'bookmark-outline', filled: 'bookmark' },
   };
-  return <Text>{iconMap[name] || '•'}</Text>;
+  
+  const icons = iconMap[name] || { outline: 'ellipse-outline', filled: 'ellipse' };
+  const iconName = focused ? icons.filled : icons.outline;
+  return <Ionicons name={iconName} size={24} color={color} />;
 }
 

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { useTheme } from '../../ui/theme/theme';
@@ -21,7 +22,8 @@ export function NetworkStatusIndicator() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>📡 Offline</Text>
+            <Ionicons name="wifi-outline" size={16} color="#FFFFFF" style={styles.icon} />
+            <Text style={styles.text}>Offline</Text>
         </View>
     );
 }
@@ -36,7 +38,12 @@ function createStyles(
             marginTop: insets.top,
             paddingVertical: theme.spacing.xs,
             marginBottom: theme.spacing.xs,
+            flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'center',
+        },
+        icon: {
+            marginRight: theme.spacing.xs,
         },
         text: {
             ...theme.typography.caption,

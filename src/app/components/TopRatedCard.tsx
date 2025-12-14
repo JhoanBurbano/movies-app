@@ -11,6 +11,7 @@ import {
     StyleSheet,
 } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import type { Movie } from '../../domain/movie/movie.types';
 import { useTheme } from '../../ui/theme/theme';
 import { cacheImage, getCachedImagePath } from '../../infrastructure/storage/imageCache.storage';
@@ -85,8 +86,9 @@ export const TopRatedCard = memo<TopRatedCardProps>(({ movie, rank, onPress }) =
 
                 {/* Rating badge */}
                 <View style={styles.ratingBadge}>
+                    <Ionicons name="star" size={13} color="#000000" style={styles.starIcon} />
                     <Text style={styles.ratingText}>
-                        ⭐ {movie.rating.toFixed(1)}
+                        {movie.rating.toFixed(1)}
                     </Text>
                 </View>
             </View>
@@ -152,13 +154,18 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             right: theme.spacing.sm,
             backgroundColor: theme.colors.rating,
             borderRadius: 8,
-            paddingHorizontal: theme.spacing.sm,
+            paddingHorizontal: theme.spacing.xs,
             paddingVertical: 4,
+            flexDirection: 'row',
+            alignItems: 'center',
             shadowColor: '#000000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.3,
             shadowRadius: 4,
             elevation: 5,
+        },
+        starIcon: {
+            marginRight: 4,
         },
         ratingText: {
             color: '#000000',

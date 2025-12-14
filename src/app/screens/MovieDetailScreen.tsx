@@ -15,6 +15,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { Image as ExpoImage } from 'expo-image';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { useMovieDetail } from '../../hooks/useMovieDetail';
 import { ErrorState } from '../components/ErrorState';
 import { useTheme } from '../../ui/theme/theme';
@@ -105,9 +106,12 @@ export function MovieDetailScreen() {
                             {movie.rating > 0 && (
                                 <>
                                     <Text style={styles.metaSeparator}>•</Text>
-                                    <Text style={styles.metaText}>
-                                        ⭐ {movie.rating.toFixed(1)}
-                                    </Text>
+                                    <View style={styles.ratingContainer}>
+                                        <Ionicons name="star" size={14} color={theme.colors.rating} style={styles.starIcon} />
+                                        <Text style={styles.metaText}>
+                                            {movie.rating.toFixed(1)}
+                                        </Text>
+                                    </View>
                                 </>
                             )}
                         </View>
@@ -209,6 +213,13 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         metaRow: {
             flexDirection: 'row',
             alignItems: 'center',
+        },
+        ratingContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        starIcon: {
+            marginRight: 4,
         },
         metaText: {
             ...theme.typography.bodySmall,
