@@ -53,9 +53,34 @@ export function useMovieDetail(movieId: number): UseMovieDetailReturn {
           isSaved: true,
           loading: false,
         }));
+        
+        // If we have saved data, try to refresh from API in background
+        // but don't block the UI or fail if network is unavailable
+        fetchMovieDetail(movieId)
+          .then((detail) => {
+            const freshMovie = mapTMDBMovieDetailToMovie(detail);
+            return getSavedMovieById(movieId).then((m) => ({
+              movie: freshMovie,
+              isSaved: !!m,
+            }));
+          })
+          .then(({ movie: freshMovie, isSaved: saved }) => {
+            setState((prev) => ({
+              ...prev,
+              movie: freshMovie,
+              isSaved: saved,
+            }));
+          })
+          .catch((apiError) => {
+            // Silently fail - we already have saved data displayed
+            logger.debug('Background API refresh failed, using saved data', {
+              error: apiError,
+            });
+          });
+        return; // Don't proceed with main API call if we have saved data
       }
 
-      // Try to fetch fresh data from API
+      // No saved data - fetch from API
       try {
         const detail = await fetchMovieDetail(movieId);
         const movie = mapTMDBMovieDetailToMovie(detail);
@@ -68,12 +93,7 @@ export function useMovieDetail(movieId: number): UseMovieDetailReturn {
           loading: false,
         }));
       } catch (apiError) {
-        // If API fails but we have saved data, use that
-        if (savedMovie) {
-          logger.warn('API fetch failed, using saved data', { error: apiError });
-          return;
-        }
-        // Otherwise, throw the error
+        // No saved data and API failed - show error
         throw apiError;
       }
     } catch (error) {

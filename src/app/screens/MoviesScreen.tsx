@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMovies } from '../../hooks/useMovies';
 import { useDebounce } from '../../hooks/useDebounce';
 import { MovieCard } from '../components/MovieCard';
@@ -151,7 +150,7 @@ export function MoviesScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.container}>
             <View style={styles.searchContainer}>
                 <TextInput
                     style={styles.searchInput}
@@ -183,7 +182,7 @@ export function MoviesScreen() {
                     showsVerticalScrollIndicator={false}
                 />
             )}
-        </SafeAreaView>
+        </View>
     );
 }
 

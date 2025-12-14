@@ -18,7 +18,11 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.message}>{message}</Text>
-      <TouchableOpacity style={styles.button} onPress={onRetry}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onRetry}
+        activeOpacity={0.8}
+      >
         <Text style={styles.buttonText}>Retry</Text>
       </TouchableOpacity>
     </View>

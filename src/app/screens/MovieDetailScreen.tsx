@@ -106,6 +106,8 @@ export function MovieDetailScreen() {
           {movie.overview && movie.overview.length > 150 && (
             <TouchableOpacity
               onPress={() => setOverviewExpanded(!overviewExpanded)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Text style={styles.expandText}>
                 {overviewExpanded ? 'Show less' : 'Show more'}
@@ -139,6 +141,7 @@ export function MovieDetailScreen() {
             isSaved && styles.saveButtonActive,
           ]}
           onPress={handleToggleSave}
+          activeOpacity={0.8}
         >
           <Text
             style={[

@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSavedMovies } from '../../hooks/useSavedMovies';
 import { MovieCard } from '../components/MovieCard';
 import { ErrorState } from '../components/ErrorState';
@@ -90,11 +89,7 @@ export function SavedScreen() {
         );
     }, [loading, error, movies, retry, refresh, renderMovie, styles]);
 
-    return (
-        <SafeAreaView style={styles.container} edges={['top']}>
-            {renderContent}
-        </SafeAreaView>
-    );
+    return <View style={styles.container}>{renderContent}</View>;
 }
 
 function createStyles(theme: ReturnType<typeof useTheme>) {

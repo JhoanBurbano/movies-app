@@ -2,10 +2,10 @@
  * Theme provider and hooks
  */
 
-import { useColorScheme } from 'react-native';
 import { lightColors, darkColors, type ColorScheme } from './colors';
 import { spacing, type Spacing } from './spacing';
 import { typography, type Typography } from './typography';
+import { useThemeContext } from './ThemeContext';
 
 export interface Theme {
   colors: ColorScheme;
@@ -15,8 +15,8 @@ export interface Theme {
 }
 
 export function useTheme(): Theme {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { effectiveTheme } = useThemeContext();
+  const isDark = effectiveTheme === 'dark';
 
   return {
     colors: isDark ? darkColors : lightColors,
