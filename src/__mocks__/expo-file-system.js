@@ -4,11 +4,14 @@
 
 const mockFiles = {};
 
+const getInfoAsync = jest.fn(async (path) => {
+  return mockFiles[path] || { exists: false };
+});
+
 module.exports = {
   cacheDirectory: '/mock/cache/',
-  getInfoAsync: jest.fn(async (path) => {
-    return mockFiles[path] || { exists: false };
-  }),
+  getInfoAsync,
+  exists: getInfoAsync, // Alias for compatibility
   makeDirectoryAsync: jest.fn(async (path) => {
     mockFiles[path] = { exists: true };
   }),

@@ -186,6 +186,7 @@ export function MoviesScreen() {
                     placeholderTextColor={theme.colors.textTertiary}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
+                    testID="search-input"
                 />
             </View>
 

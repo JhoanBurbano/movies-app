@@ -1,0 +1,20 @@
+appId: com.collars.movies
+---
+# Test: Navigation between tabs
+
+- launchApp
+- waitForAnimationToEnd
+- assertVisible: "Movies"
+- assertVisible:
+    label: "saved-tab"
+
+# Navigate to Saved tab
+- tapOn:
+    point: "70%,95%"
+- assertVisible: "No saved movies"
+
+# Navigate back to Movies tab
+- tapOn:
+    point: "30%,95%"
+- assertVisible: "Popular"
+- assertVisible: "Top Rated"

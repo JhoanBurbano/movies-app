@@ -1,0 +1,56 @@
+appId: com.collars.movies
+---
+# Test: Movie detail screen
+# Verifies navigation to detail, information display, and overview expand/collapse
+
+- launchApp
+- assertVisible: "Movies"
+
+# Wait for movies to load
+- waitForAnimationToEnd
+
+# Tap on first movie card (Popular section)
+- tapOn:
+    point: "50%,30%"
+
+# Wait for detail to load
+- waitForAnimationToEnd
+
+# Swipe down to expand overview
+- swipe:
+    start: "50%,60%"
+    end: "50%,30%"
+    duration: 300
+- waitForAnimationToEnd
+
+# Verify detail screen elements
+- assertVisible: "Save Movie"
+- assertVisible: "Overview"
+
+# Test overview expand/collapse (if available)
+- runFlow:
+    when:
+      visible: "Show more"
+    commands:
+      - tapOn: "Show more"
+      - waitForAnimationToEnd
+      - tapOn: "Show less"
+      - waitForAnimationToEnd
+
+# Navigate back by platform specific command
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: ios
+    commands:
+      - tapOn: "Movies"
+      - waitForAnimationToEnd
+
+
+# Verify we're back on Movies screen
+- assertVisible: "Popular"
+

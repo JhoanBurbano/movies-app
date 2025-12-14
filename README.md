@@ -15,10 +15,14 @@ A React Native mobile application built with Expo SDK 54 that displays Popular a
 
 ## Prerequisites
 
-- Node.js 22+ 
-- npm or yarn
-- Expo CLI (installed globally or via npx)
-- TMDB API key ([Get one here](https://www.themoviedb.org/settings/api))
+- **Node.js 20+** (22+ recommended)
+- **npm** or **yarn**
+- **Expo CLI** (installed globally or via npx)
+- **Ruby 3.0+** (required for iOS builds with CocoaPods)
+  - Only needed if running `npx expo run:ios` or building native apps
+  - Not required for Expo Go development
+  - Check version: `ruby --version`
+- **TMDB API key** ([Get one here](https://www.themoviedb.org/settings/api))
 
 ## Setup
 
@@ -47,7 +51,9 @@ A React Native mobile application built with Expo SDK 54 that displays Popular a
 
 ## Testing
 
-Run tests with:
+### Unit Tests
+
+Run unit tests with:
 ```bash
 npm test
 ```
@@ -56,6 +62,33 @@ Run tests in watch mode:
 ```bash
 npm run test:watch
 ```
+
+### End-to-End Tests
+
+E2E tests are located in the `e2e/` directory and use [Maestro](https://maestro.mobile.dev/).
+
+**Prerequisites**:
+1. Install Maestro: `curl -Ls "https://get.maestro.mobile.dev" | bash`
+2. Build the app: 
+   - iOS: `npx expo run:ios` (requires Ruby 3.0+)
+   - Android: `npx expo run:android`
+
+**Run E2E tests**:
+```bash
+# Run all tests
+npm run test:e2e
+
+# Run for iOS
+npm run test:e2e:ios
+
+# Run for Android
+npm run test:e2e:android
+
+# Run a specific test
+maestro test e2e/01-navigation.yaml
+```
+
+See `e2e/README.md` for detailed documentation.
 
 ## Architecture
 

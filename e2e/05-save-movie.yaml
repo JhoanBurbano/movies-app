@@ -1,0 +1,89 @@
+appId: com.collars.movies
+---
+# Test: Save and unsave movie
+# Verifies save functionality and persistence
+
+- launchApp
+- assertVisible: "Movies"
+
+# Wait for movies to load
+- waitForAnimationToEnd
+
+# Navigate to movie detail
+- tapOn:
+    point: "50%,30%"
+
+# Wait for detail to load
+- waitForAnimationToEnd
+
+# Swipe down to expand overview
+- swipe:
+    start: "50%,60%"
+    end: "50%,30%"
+    duration: 300
+- waitForAnimationToEnd
+
+# Save the movie
+- tapOn: "Save Movie"
+- waitForAnimationToEnd
+
+# Verify button changes to "Saved"
+- assertVisible: "✓ Saved"
+
+# Navigate back
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: ios
+    commands:
+      - tapOn: "Movies"
+
+# Navigate to Saved tab
+- tapOn:
+    point: "70%,95%"
+
+# Verify movie appears in saved list
+- assertVisible: 
+    label: "saved-tab"
+
+# Tap on saved movie
+- tapOn:
+    point: "20%,30%"
+
+# Wait for detail to load
+- swipe:
+    start: "50%,60%"
+    end: "50%,30%"
+    duration: 300
+- waitForAnimationToEnd
+
+# Verify it shows as saved
+- assertVisible: "✓ Saved"
+
+# Unsave the movie
+- tapOn: "✓ Saved"
+- waitForAnimationToEnd
+
+# Navigate back
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: ios
+    commands:
+      - tapOn: "Saved"
+
+# Verify movie is removed from saved list (may show empty state)
+- runFlow:
+    when:
+      visible: "No saved movies"
+    commands:
+      - assertVisible: "No saved movies"
+

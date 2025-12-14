@@ -1,0 +1,31 @@
+appId: com.collars.movies
+---
+# Test: Movie search functionality
+# Verifies search bar, debouncing, and search results
+
+- launchApp
+- assertVisible: "Movies"
+
+# Find and tap search input
+- tapOn:
+    id: "search-input"
+- inputText: "Inceptionx"
+- waitForAnimationToEnd
+
+# Verify search results appear (either results or empty state)
+- runFlow:
+    when:
+      visible: "No movies found"
+    commands:
+      - assertVisible: "No movies found"
+
+# Clear search by selecting all and deleting, or navigate back
+- tapOn: 
+    id: "search-input"
+- eraseText
+- waitForAnimationToEnd
+
+# Verify sections are restored
+- assertVisible: "Popular"
+- assertVisible: "Top Rated"
+

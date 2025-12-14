@@ -8,9 +8,9 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../../ui/theme/theme';
 import { useThemeContext, type ThemeMode } from '../../ui/theme/ThemeContext';
@@ -27,7 +27,7 @@ export function ThemeToggle() {
     { mode: 'light', label: 'Light', iconName: 'sunny-outline' },
     { mode: 'dark', label: 'Dark', iconName: 'moon-outline' },
   ];
-  
+
   const scales = options.map(() => useSharedValue(1));
 
   return (
@@ -56,6 +56,7 @@ export function ThemeToggle() {
           return (
             <AnimatedTouchableOpacity
               key={option.mode}
+              testID={`theme-toggle-${option.mode}`}
               style={[
                 styles.option,
                 themeMode === option.mode && styles.optionActive,

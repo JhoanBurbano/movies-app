@@ -1,0 +1,35 @@
+appId: com.collars.movies
+---
+# Test: Movies list display
+# Verifies that Popular, Upcoming, and Top Rated movies are displayed
+
+- launchApp
+- assertVisible: "Movies"
+
+# Wait for movies to load
+- waitForAnimationToEnd
+- assertVisible: "Popular"
+- assertVisible: "Top Rated"
+
+# Verify horizontal scrolling works (swipe right on Popular section)
+- swipe:
+    start: "80%,30%"
+    end: "20%,30%"
+    duration: 300
+- waitForAnimationToEnd
+
+# Swipe back left
+- swipe:
+    start: "20%,30%"
+    end: "80%,30%"
+    duration: 300
+- waitForAnimationToEnd
+
+# Scroll down to verify Top Rated section
+- swipe:
+    start: "50%,60%"
+    end: "50%,40%"
+    duration: 300
+- waitForAnimationToEnd
+- assertVisible: "Upcoming"
+

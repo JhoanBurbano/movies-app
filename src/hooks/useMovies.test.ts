@@ -10,6 +10,7 @@ import { useMovies } from './useMovies';
 import {
   fetchPopularMovies,
   fetchUpcomingMovies,
+  fetchTopRatedMovies,
   searchMovies,
 } from '../infrastructure/api/tmdb.client';
 import { TMDBError, TMDBErrorCode } from '../infrastructure/api/tmdb.errors';
@@ -22,6 +23,9 @@ const mockFetchPopularMovies = fetchPopularMovies as jest.MockedFunction<
 >;
 const mockFetchUpcomingMovies = fetchUpcomingMovies as jest.MockedFunction<
   typeof fetchUpcomingMovies
+>;
+const mockFetchTopRatedMovies = fetchTopRatedMovies as jest.MockedFunction<
+  typeof fetchTopRatedMovies
 >;
 const mockSearchMovies = searchMovies as jest.MockedFunction<
   typeof searchMovies
@@ -69,6 +73,13 @@ describe('useMovies', () => {
       total_results: 1,
     });
 
+    mockFetchTopRatedMovies.mockResolvedValue({
+      page: 1,
+      results: [],
+      total_pages: 1,
+      total_results: 0,
+    });
+
     const { result } = renderHook(() => useMovies());
 
     expect(result.current.loading).toBe(true);
@@ -93,6 +104,7 @@ describe('useMovies', () => {
 
     mockFetchPopularMovies.mockRejectedValue(apiError);
     mockFetchUpcomingMovies.mockRejectedValue(apiError);
+    mockFetchTopRatedMovies.mockRejectedValue(apiError);
 
     const { result } = renderHook(() => useMovies());
 
@@ -114,6 +126,13 @@ describe('useMovies', () => {
     });
 
     mockFetchUpcomingMovies.mockResolvedValue({
+      page: 1,
+      results: [],
+      total_pages: 1,
+      total_results: 0,
+    });
+
+    mockFetchTopRatedMovies.mockResolvedValue({
       page: 1,
       results: [],
       total_pages: 1,
@@ -210,6 +229,17 @@ describe('useMovies', () => {
       });
 
     mockFetchUpcomingMovies
+      .mockRejectedValueOnce(
+        new TMDBError(TMDBErrorCode.NETWORK_ERROR, 'Network error')
+      )
+      .mockResolvedValueOnce({
+        page: 1,
+        results: [],
+        total_pages: 1,
+        total_results: 0,
+      });
+
+    mockFetchTopRatedMovies
       .mockRejectedValueOnce(
         new TMDBError(TMDBErrorCode.NETWORK_ERROR, 'Network error')
       )

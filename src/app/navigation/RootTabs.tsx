@@ -49,6 +49,7 @@ export function RootTabs() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon name="bookmark" color={color} focused={focused} />
           ),
+          tabBarAccessibilityLabel: "saved-tab",
         }}
       />
     </Tab.Navigator>
@@ -61,7 +62,7 @@ function TabIcon({ name, color, focused }: { name: string; color: string; focuse
     film: { outline: 'film-outline', filled: 'film' },
     bookmark: { outline: 'bookmark-outline', filled: 'bookmark' },
   };
-  
+
   const icons = iconMap[name] || { outline: 'ellipse-outline', filled: 'ellipse' };
   const iconName = focused ? icons.filled : icons.outline;
   return <Ionicons name={iconName} size={24} color={color} />;

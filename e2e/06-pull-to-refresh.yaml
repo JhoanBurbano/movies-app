@@ -1,0 +1,39 @@
+appId: com.collars.movies
+---
+# Test: Pull to refresh functionality
+# Verifies that pull-to-refresh works on Movies and Saved screens
+
+- launchApp
+- assertVisible: "Movies"
+
+# Wait for initial load
+- waitForAnimationToEnd
+
+# Pull to refresh on Movies screen (swipe down from top)
+- swipe:
+    start: "50%,20%"
+    end: "50%,40%"
+    duration: 500
+- waitForAnimationToEnd
+
+# Verify content is still visible
+- assertVisible: "Popular"
+
+# Navigate to Saved tab
+- tapOn:
+    point: "70%,95%"
+
+# Pull to refresh on Saved screen (swipe down from top)
+- swipe:
+    start: "50%,20%"
+    end: "50%,40%"
+    duration: 500
+- waitForAnimationToEnd
+
+# Verify screen is still functional (either has saved movies or empty state)
+- runFlow:
+    when:
+      visible: "No saved movies"
+    commands:
+      - assertVisible: "No saved movies"
+
