@@ -6,15 +6,38 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+    FadeIn,
+    FadeOut,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from '../../ui/theme/theme';
 import { useThemeContext } from '../../ui/theme/ThemeContext';
 import { ThemeToggle } from './ThemeToggle';
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 export function ThemeToggleButton() {
     const theme = useTheme();
     const { themeMode } = useThemeContext();
     const [modalVisible, setModalVisible] = useState(false);
+    const buttonScale = useSharedValue(1);
     const styles = createStyles(theme);
+
+    const buttonAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: buttonScale.value }],
+    }));
+
+    const handlePressIn = () => {
+        buttonScale.value = withTiming(0.95, { duration: 100 });
+    };
+
+    const handlePressOut = () => {
+        buttonScale.value = withTiming(1, { duration: 100 });
+    };
 
     const getIconName = (): keyof typeof Ionicons.glyphMap => {
         switch (themeMode) {
@@ -29,19 +52,21 @@ export function ThemeToggleButton() {
 
     return (
         <>
-            <TouchableOpacity
-                style={styles.button}
+            <AnimatedTouchableOpacity
+                style={[styles.button, buttonAnimatedStyle]}
                 onPress={() => setModalVisible(true)}
-                activeOpacity={0.7}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                activeOpacity={1}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
                 <Ionicons name={getIconName()} size={22} color={theme.colors.text} />
-            </TouchableOpacity>
+            </AnimatedTouchableOpacity>
 
             <Modal
                 visible={modalVisible}
                 transparent
-                animationType="fade"
+                animationType="none"
                 onRequestClose={() => setModalVisible(false)}
             >
                 <TouchableOpacity
@@ -49,7 +74,11 @@ export function ThemeToggleButton() {
                     activeOpacity={1}
                     onPress={() => setModalVisible(false)}
                 >
-                    <View style={styles.modalContent}>
+                    <AnimatedView
+                        style={styles.modalContent}
+                        entering={FadeIn.duration(200)}
+                        exiting={FadeOut.duration(150)}
+                    >
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Theme</Text>
                             <TouchableOpacity
@@ -61,7 +90,7 @@ export function ThemeToggleButton() {
                             </TouchableOpacity>
                         </View>
                         <ThemeToggle />
-                    </View>
+                    </AnimatedView>
                 </TouchableOpacity>
             </Modal>
         </>

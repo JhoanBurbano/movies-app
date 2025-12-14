@@ -12,6 +12,11 @@ import {
 } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import type { Movie } from '../../domain/movie/movie.types';
 import { useTheme } from '../../ui/theme/theme';
 import { cacheImage, getCachedImagePath } from '../../infrastructure/storage/imageCache.storage';
@@ -27,11 +32,16 @@ export const TopRatedCard = memo<TopRatedCardProps>(({ movie, rank, onPress }) =
     const theme = useTheme();
     const { isConnected } = useNetworkStatus();
     const [cachedImageUri, setCachedImageUri] = useState<string | null>(null);
+    const scale = useSharedValue(1);
     const year = movie.releaseDate
         ? new Date(movie.releaseDate).getFullYear()
         : 'N/A';
 
     const styles = createStyles(theme);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
 
     // Cache image when online
     useEffect(() => {
@@ -57,49 +67,62 @@ export const TopRatedCard = memo<TopRatedCardProps>(({ movie, rank, onPress }) =
 
     const imageUri = cachedImageUri || movie.posterUrl;
 
+    const handlePressIn = () => {
+        scale.value = withTiming(0.98, { duration: 100 });
+    };
+
+    const handlePressOut = () => {
+        scale.value = withTiming(1, { duration: 100 });
+    };
+
     return (
-        <TouchableOpacity
-            style={styles.container}
-            onPress={() => onPress(movie)}
-            activeOpacity={0.7}
-        >
-            <View style={styles.posterContainer}>
-                {imageUri ? (
-                    <ExpoImage
-                        source={{ uri: imageUri }}
-                        style={styles.poster}
-                        contentFit="cover"
-                        transition={200}
-                        placeholderContentFit="cover"
-                        cachePolicy={isConnected ? 'memory-disk' : 'disk'}
-                    />
-                ) : (
-                    <View style={[styles.poster, styles.placeholder]}>
-                        <Text style={styles.placeholderText}>No Image</Text>
+        <View style={styles.container}>
+            <TouchableOpacity
+                onPress={() => onPress(movie)}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                activeOpacity={1}
+            >
+                <Animated.View style={animatedStyle}>
+                    <View style={styles.posterContainer}>
+                        {imageUri ? (
+                            <ExpoImage
+                                source={{ uri: imageUri }}
+                                style={styles.poster}
+                                contentFit="cover"
+                                transition={200}
+                                placeholderContentFit="cover"
+                                cachePolicy={isConnected ? 'memory-disk' : 'disk'}
+                            />
+                        ) : (
+                            <View style={[styles.poster, styles.placeholder]}>
+                                <Text style={styles.placeholderText}>No Image</Text>
+                            </View>
+                        )}
+
+                        {/* Ranking number overlay */}
+                        <View style={styles.rankBadge}>
+                            <Text style={styles.rankText}>{rank}</Text>
+                        </View>
+
+                        {/* Rating badge */}
+                        <View style={styles.ratingBadge}>
+                            <Ionicons name="star" size={13} color="#000000" style={styles.starIcon} />
+                            <Text style={styles.ratingText}>
+                                {movie.rating.toFixed(1)}
+                            </Text>
+                        </View>
                     </View>
-                )}
 
-                {/* Ranking number overlay */}
-                <View style={styles.rankBadge}>
-                    <Text style={styles.rankText}>{rank}</Text>
-                </View>
-
-                {/* Rating badge */}
-                <View style={styles.ratingBadge}>
-                    <Ionicons name="star" size={13} color="#000000" style={styles.starIcon} />
-                    <Text style={styles.ratingText}>
-                        {movie.rating.toFixed(1)}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={styles.info}>
-                <Text style={styles.title} numberOfLines={2}>
-                    {movie.title}
-                </Text>
-                <Text style={styles.year}>{year}</Text>
-            </View>
-        </TouchableOpacity>
+                    <View style={styles.info}>
+                        <Text style={styles.title} numberOfLines={2}>
+                            {movie.title}
+                        </Text>
+                        <Text style={styles.year}>{year}</Text>
+                    </View>
+                </Animated.View>
+            </TouchableOpacity>
+        </View>
     );
 });
 

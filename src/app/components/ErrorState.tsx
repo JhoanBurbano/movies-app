@@ -4,6 +4,12 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from '../../ui/theme/theme';
 
 interface ErrorStateProps {
@@ -11,20 +17,42 @@ interface ErrorStateProps {
   onRetry: () => void;
 }
 
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const buttonScale = useSharedValue(1);
+
+  const buttonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: buttonScale.value }],
+  }));
+
+  const handlePressIn = () => {
+    buttonScale.value = withTiming(0.98, { duration: 100 });
+  };
+
+  const handlePressOut = () => {
+    buttonScale.value = withTiming(1, { duration: 100 });
+  };
+
+  const handleRetry = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onRetry();
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.message}>{message}</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={onRetry}
-        activeOpacity={0.8}
+      <AnimatedTouchableOpacity
+        style={[styles.button, buttonAnimatedStyle]}
+        onPress={handleRetry}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={1}
       >
         <Text style={styles.buttonText}>Retry</Text>
-      </TouchableOpacity>
+      </AnimatedTouchableOpacity>
     </View>
   );
 }

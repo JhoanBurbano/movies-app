@@ -10,6 +10,7 @@ import {
     TextInput,
     RefreshControl,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMovies } from '../../hooks/useMovies';
@@ -65,19 +66,24 @@ export function MoviesScreen() {
         [navigation]
     );
 
+    const handleRefresh = useCallback(async () => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        refresh();
+    }, [refresh]);
+
     const renderMovie = useCallback(
-        ({ item }: { item: Movie }) => (
-            <MovieCard movie={item} onPress={handleMoviePress} />
+        ({ item, index }: { item: Movie; index: number }) => (
+            <MovieCard movie={item} onPress={handleMoviePress} index={index} />
         ),
         [handleMoviePress]
     );
 
     const renderTopRatedMovie = useCallback(
         ({ item, index }: { item: Movie; index: number }) => (
-            <TopRatedCard 
-                movie={item} 
-                rank={index + 1} 
-                onPress={handleMoviePress} 
+            <TopRatedCard
+                movie={item}
+                rank={index + 1}
+                onPress={handleMoviePress}
             />
         ),
         [handleMoviePress]
@@ -88,7 +94,7 @@ export function MoviesScreen() {
             if (movies.length === 0) {
                 return null;
             }
-            
+
             return (
                 <View>
                     <SectionHeader title={title} />
@@ -209,7 +215,7 @@ export function MoviesScreen() {
                     }}
                     keyExtractor={(item) => item.type}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
                     }
                     showsVerticalScrollIndicator={false}
                 />

@@ -11,11 +11,16 @@ import {
     TouchableOpacity,
     ActivityIndicator,
 } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { Image as ExpoImage } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import { useMovieDetail } from '../../hooks/useMovieDetail';
 import { ErrorState } from '../components/ErrorState';
 import { useTheme } from '../../ui/theme/theme';
@@ -38,6 +43,7 @@ export function MovieDetailScreen() {
 
     const [overviewExpanded, setOverviewExpanded] = useState(false);
     const [cachedPosterUri, setCachedPosterUri] = useState<string | null>(null);
+    const buttonScale = useSharedValue(1);
 
     // Get cached poster when offline
     useEffect(() => {
@@ -53,9 +59,20 @@ export function MovieDetailScreen() {
     }, [movie?.posterUrl, isConnected]);
 
     const handleToggleSave = async () => {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        buttonScale.value = withTiming(0.98, { duration: 100 }, () => {
+            buttonScale.value = withTiming(1, { duration: 100 });
+        });
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         await toggleSave();
     };
+
+    const handleToggleOverview = () => {
+        setOverviewExpanded(!overviewExpanded);
+    };
+
+    const buttonAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: buttonScale.value }],
+    }));
 
     if (loading) {
         return (
@@ -128,7 +145,7 @@ export function MovieDetailScreen() {
                     </Text>
                     {movie.overview && movie.overview.length > 150 && (
                         <TouchableOpacity
-                            onPress={() => setOverviewExpanded(!overviewExpanded)}
+                            onPress={handleToggleOverview}
                             activeOpacity={0.7}
                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         >
@@ -158,23 +175,25 @@ export function MovieDetailScreen() {
                     )}
                 </View>
 
-                <TouchableOpacity
-                    style={[
-                        styles.saveButton,
-                        isSaved && styles.saveButtonActive,
-                    ]}
-                    onPress={handleToggleSave}
-                    activeOpacity={0.8}
-                >
-                    <Text
+                <Animated.View style={buttonAnimatedStyle}>
+                    <TouchableOpacity
                         style={[
-                            styles.saveButtonText,
-                            isSaved && styles.saveButtonTextActive,
+                            styles.saveButton,
+                            isSaved && styles.saveButtonActive,
                         ]}
+                        onPress={handleToggleSave}
+                        activeOpacity={1}
                     >
-                        {isSaved ? '✓ Saved' : 'Save Movie'}
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={[
+                                styles.saveButtonText,
+                                isSaved && styles.saveButtonTextActive,
+                            ]}
+                        >
+                            {isSaved ? '✓ Saved' : 'Save Movie'}
+                        </Text>
+                    </TouchableOpacity>
+                </Animated.View>
             </View>
         </ScrollView>
     );

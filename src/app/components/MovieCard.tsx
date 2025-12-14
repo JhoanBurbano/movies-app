@@ -10,6 +10,11 @@ import {
     StyleSheet,
 } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
+import Animated, { 
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import type { Movie } from '../../domain/movie/movie.types';
 import { useTheme } from '../../ui/theme/theme';
 import { cacheImage, getCachedImagePath } from '../../infrastructure/storage/imageCache.storage';
@@ -18,17 +23,23 @@ import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 interface MovieCardProps {
     movie: Movie;
     onPress: (movie: Movie) => void;
+    index?: number;
 }
 
-export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
+export const MovieCard = memo<MovieCardProps>(({ movie, onPress, index = 0 }) => {
     const theme = useTheme();
     const { isConnected } = useNetworkStatus();
     const [cachedImageUri, setCachedImageUri] = useState<string | null>(null);
+    const scale = useSharedValue(1);
     const year = movie.releaseDate
         ? new Date(movie.releaseDate).getFullYear()
         : 'N/A';
 
     const styles = createStyles(theme);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
 
     // Cache image when online
     useEffect(() => {
@@ -54,12 +65,23 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
 
     const imageUri = cachedImageUri || movie.posterUrl;
 
+    const handlePressIn = () => {
+        scale.value = withTiming(0.98, { duration: 100 });
+    };
+
+    const handlePressOut = () => {
+        scale.value = withTiming(1, { duration: 100 });
+    };
+
     return (
-        <TouchableOpacity
-            style={styles.container}
-            onPress={() => onPress(movie)}
-            activeOpacity={0.7}
-        >
+        <View style={styles.container}>
+            <TouchableOpacity
+                onPress={() => onPress(movie)}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                activeOpacity={1}
+            >
+                <Animated.View style={animatedStyle}>
             <View style={styles.posterContainer}>
                 {imageUri ? (
                     <ExpoImage
@@ -87,7 +109,9 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
                 </Text>
                 <Text style={styles.year}>{year}</Text>
             </View>
-        </TouchableOpacity>
+                </Animated.View>
+            </TouchableOpacity>
+        </View>
     );
 });
 

@@ -9,6 +9,7 @@ import {
     FlatList,
     RefreshControl,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSavedMovies } from '../../hooks/useSavedMovies';
@@ -43,6 +44,11 @@ export function SavedScreen() {
         },
         [navigation]
     );
+
+    const handleRefresh = useCallback(async () => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        refresh();
+    }, [refresh]);
 
     const renderMovie = useCallback(
         ({ item }: { item: Movie }) => (
@@ -80,7 +86,7 @@ export function SavedScreen() {
                 contentContainerStyle={styles.listContent}
                 columnWrapperStyle={styles.row}
                 refreshControl={
-                    <RefreshControl refreshing={loading} onRefresh={refresh} />
+                    <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
                 }
                 initialNumToRender={10}
                 windowSize={10}
