@@ -1,4 +1,4 @@
-appId: com.collars.movies
+appId: com.jsburbano.movies
 ---
 # Test: Movies list display
 # Verifies that Popular, Upcoming, and Top Rated movies are displayed

@@ -1,4 +1,4 @@
-appId: com.collars.movies
+appId: com.jsburbano.movies
 ---
 # Test: Movie detail screen
 # Verifies navigation to detail, information display, and overview expand/collapse
@@ -47,7 +47,8 @@ appId: com.collars.movies
     when:
       platform: ios
     commands:
-      - tapOn: "Movies"
+      - tapOn: 
+          point: "5%,8%"
       - waitForAnimationToEnd
 
 

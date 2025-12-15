@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Collars Movies",
+    "name": "Movies",
     "slug": "collars-movies",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,19 +16,28 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.collars.movies"
+      "bundleIdentifier": "com.jsburbano.movies",
+      "icon": "./assets/icon.png",
+      "backgroundColor": "#FFD000",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFD000"
       },
-      "package": "com.collars.movies"
+      "package": "com.jsburbano.movies"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "collars-movies"
+    "scheme": "collars-movies",
+    "extra": {
+      "eas": {
+        "projectId": "cb79eeed-72be-4678-a894-6ec316b297eb"
+      }
+    }
   }
 }
-

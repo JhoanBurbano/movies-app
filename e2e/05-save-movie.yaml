@@ -1,4 +1,4 @@
-appId: com.collars.movies
+appId: com.jsburbano.movies
 ---
 # Test: Save and unsave movie
 # Verifies save functionality and persistence
@@ -40,7 +40,8 @@ appId: com.collars.movies
     when:
       platform: ios
     commands:
-      - tapOn: "Movies"
+      - tapOn: 
+          point: "5%,8%"
 
 # Navigate to Saved tab
 - tapOn:

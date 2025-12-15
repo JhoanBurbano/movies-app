@@ -25,6 +25,8 @@ A React Native mobile application built with Expo SDK 54 that displays Popular a
   - Not required for Expo Go development
   - Check version: `ruby --version`
 - **TMDB API key** ([Get one here](https://www.themoviedb.org/settings/api))
+- **EAS CLI** (for building - optional but recommended)
+  - Install: `npm install -g eas-cli`
 
 ## Setup
 
@@ -366,6 +368,52 @@ Required environment variables (set in `.env`):
 - `EXPO_PUBLIC_TMDB_API_KEY`: Your TMDB API key
 - `EXPO_PUBLIC_TMDB_BASE_URL`: TMDB API base URL (default: https://api.themoviedb.org/3)
 - `EXPO_PUBLIC_TMDB_IMAGE_BASE_URL`: TMDB image base URL (default: https://image.tmdb.org/t/p/w500)
+
+## Building & Delivery
+
+### Quick Start with EAS Build (Recommended)
+
+1. **Install EAS CLI**:
+   ```bash
+   npm install -g eas-cli
+   ```
+
+2. **Login to Expo**:
+   ```bash
+   eas login
+   ```
+
+3. **Build Android APK**:
+   ```bash
+   eas build --platform android --profile preview
+   ```
+
+4. **Share the download link** provided by EAS
+
+### Alternative: Local Build
+
+**Android**:
+```bash
+npx expo run:android
+# APK will be in: android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+**iOS** (requires Xcode):
+```bash
+npx expo run:ios
+```
+
+### Configuration
+
+The project includes `eas.json` with build profiles. For EAS builds, you may need to configure environment variables:
+
+```bash
+# Option 1: Add to eas.json (less secure)
+# Option 2: Use EAS secrets (recommended)
+eas secret:create --scope project --name EXPO_PUBLIC_TMDB_API_KEY --value your_api_key
+```
+
+See `DELIVERY_GUIDE.md` for complete delivery instructions.
 
 ## License
 

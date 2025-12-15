@@ -1,4 +1,4 @@
-appId: com.collars.movies
+appId: com.jsburbano.movies
 ---
 # Test: Movie search functionality
 # Verifies search bar, debouncing, and search results

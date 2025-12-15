@@ -32,7 +32,7 @@ export function ThemeToggle() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Theme</Text>
+      <Text style={styles.label}>Select a theme mode</Text>
       <View style={styles.optionsContainer}>
         {options.map((option, index) => {
           const scale = scales[index];
@@ -99,8 +99,6 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
       ...theme.typography.bodySmall,
       color: theme.colors.textSecondary,
       marginBottom: theme.spacing.sm,
-      textTransform: 'uppercase',
-      letterSpacing: 0.5,
     },
     optionsContainer: {
       flexDirection: 'row',

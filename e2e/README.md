@@ -76,13 +76,13 @@ This directory contains end-to-end (e2e) tests for the Collars Movies app using 
 Set the app ID as an environment variable:
 
 ```bash
-export APP_ID=com.collars.movies
+export APP_ID=com.jsburbano.movies
 maestro test e2e/
 ```
 
 Or inline:
 ```bash
-APP_ID=com.collars.movies maestro test e2e/
+APP_ID=com.jsburbano.movies maestro test e2e/
 ```
 
 ## Test Structure

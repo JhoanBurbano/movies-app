@@ -1,4 +1,4 @@
-appId: com.collars.movies
+appId: com.jsburbano.movies
 ---
 # Test: Pull to refresh functionality
 # Verifies that pull-to-refresh works on Movies and Saved screens
