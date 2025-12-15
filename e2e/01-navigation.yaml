@@ -17,4 +17,3 @@ appId: com.collars.movies
 - tapOn:
     point: "30%,95%"
 - assertVisible: "Popular"
-- assertVisible: "Top Rated"

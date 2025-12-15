@@ -22,7 +22,9 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 import { useMovieDetail } from '../../hooks/useMovieDetail';
+import { useMovieVideos } from '../../hooks/useMovieVideos';
 import { ErrorState } from '../components/ErrorState';
+import { VideoPlayer } from '../components/VideoPlayer';
 import { useTheme } from '../../ui/theme/theme';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { getCachedImagePath } from '../../infrastructure/storage/imageCache.storage';
@@ -40,9 +42,12 @@ export function MovieDetailScreen() {
     const { movieId } = route.params;
     const { movie, loading, error, isSaved, retry, toggleSave } =
         useMovieDetail(movieId);
+    const { trailers } = useMovieVideos(movieId);
 
     const [overviewExpanded, setOverviewExpanded] = useState(false);
     const [cachedPosterUri, setCachedPosterUri] = useState<string | null>(null);
+    const [selectedTrailer, setSelectedTrailer] = useState<typeof trailers[0] | null>(null);
+    const [showVideoPlayer, setShowVideoPlayer] = useState(false);
     const buttonScale = useSharedValue(1);
 
     // Get cached poster when offline
@@ -68,6 +73,14 @@ export function MovieDetailScreen() {
 
     const handleToggleOverview = () => {
         setOverviewExpanded(!overviewExpanded);
+    };
+
+    const handlePlayTrailer = () => {
+        if (trailers.length > 0) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            setSelectedTrailer(trailers[0]);
+            setShowVideoPlayer(true);
+        }
     };
 
     const buttonAnimatedStyle = useAnimatedStyle(() => ({
@@ -175,26 +188,51 @@ export function MovieDetailScreen() {
                     )}
                 </View>
 
-                <Animated.View style={buttonAnimatedStyle}>
-                    <TouchableOpacity
-                        style={[
-                            styles.saveButton,
-                            isSaved && styles.saveButtonActive,
-                        ]}
-                        onPress={handleToggleSave}
-                        activeOpacity={1}
-                    >
-                        <Text
-                            style={[
-                                styles.saveButtonText,
-                                isSaved && styles.saveButtonTextActive,
-                            ]}
+                <View style={styles.actionButtons}>
+                    {trailers.length > 0 && (
+                        <TouchableOpacity
+                            style={styles.trailerButton}
+                            onPress={handlePlayTrailer}
+                            activeOpacity={0.8}
                         >
-                            {isSaved ? '✓ Saved' : 'Save Movie'}
-                        </Text>
-                    </TouchableOpacity>
-                </Animated.View>
+                            <Ionicons
+                                name="play-circle"
+                                size={20}
+                                color={theme.colors.textOnDark}
+                            />
+                            <Text style={styles.trailerButtonText}>Play Trailer</Text>
+                        </TouchableOpacity>
+                    )}
+                    <Animated.View style={[buttonAnimatedStyle, styles.saveButtonContainer]}>
+                        <TouchableOpacity
+                            style={[
+                                styles.saveButton,
+                                isSaved && styles.saveButtonActive,
+                            ]}
+                            onPress={handleToggleSave}
+                            activeOpacity={1}
+                        >
+                            <Text
+                                style={[
+                                    styles.saveButtonText,
+                                    isSaved && styles.saveButtonTextActive,
+                                ]}
+                            >
+                                {isSaved ? '✓ Saved' : 'Save Movie'}
+                            </Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+                </View>
             </View>
+
+            <VideoPlayer
+                video={selectedTrailer}
+                visible={showVideoPlayer}
+                onClose={() => {
+                    setShowVideoPlayer(false);
+                    setSelectedTrailer(null);
+                }}
+            />
         </ScrollView>
     );
 }
@@ -289,7 +327,6 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             paddingHorizontal: theme.spacing.lg,
             borderRadius: 8,
             alignItems: 'center',
-            marginTop: theme.spacing.md,
         },
         saveButtonActive: {
             backgroundColor: theme.colors.success,
@@ -304,6 +341,31 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         errorText: {
             ...theme.typography.body,
             color: theme.colors.error,
+        },
+        actionButtons: {
+            flexDirection: 'row',
+            gap: theme.spacing.md,
+            marginTop: theme.spacing.md,
+        },
+        trailerButton: {
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: theme.colors.surface,
+            paddingVertical: theme.spacing.md,
+            paddingHorizontal: theme.spacing.lg,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+            gap: theme.spacing.xs,
+        },
+        trailerButtonText: {
+            ...theme.typography.button,
+            color: theme.colors.text,
+        },
+        saveButtonContainer: {
+            flex: 1,
         },
     });
 }

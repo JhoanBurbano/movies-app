@@ -57,3 +57,53 @@ export interface TMDBGenresResponseDTO {
   genres: TMDBGenreDTO[];
 }
 
+export interface TMDBVideoDTO {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+}
+
+export interface TMDBVideosResponseDTO {
+  id: number;
+  results: TMDBVideoDTO[];
+}
+
+// Lists API DTOs
+export interface TMDBCreateListRequestDTO {
+  name: string;
+  description?: string;
+  language?: string;
+}
+
+export interface TMDBCreateListResponseDTO {
+  success: boolean;
+  status_code: number;
+  status_message: string;
+  list_id: number;
+}
+
+export interface TMDBAddToListRequestDTO {
+  media_id: number;
+}
+
+export interface TMDBAddToListResponseDTO {
+  success: boolean;
+  status_code: number;
+  status_message: string;
+}
+
+export interface TMDBRemoveFromListRequestDTO {
+  media_id: number;
+}
+
+export interface TMDBRemoveFromListResponseDTO {
+  success: boolean;
+  status_code: number;
+  status_message: string;
+}
+

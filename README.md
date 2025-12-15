@@ -4,12 +4,14 @@ A React Native mobile application built with Expo SDK 54 that displays Popular a
 
 ## Features
 
-- **Movies Tab**: Browse Popular and Upcoming movies in horizontal carousels
-- **Search**: Real-time movie search with 400ms debounce
+- **Movies Tab**: Browse Popular, Upcoming, and Top Rated movies in horizontal carousels
+- **Search**: Real-time movie search with 400ms debounce and filters (year, genre, language)
 - **Movie Details**: Rich movie information including poster, rating, genres, runtime, and overview
+- **Play Trailers**: Watch movie trailers directly from the detail screen (YouTube/Vimeo)
 - **Save Movies**: Save movies for offline viewing with haptic feedback
+- **Sync to TMDB**: Automatically sync saved movies to TMDB Lists API (optional, requires session_id)
 - **Saved Tab**: View all saved movies with full offline support
-- **Dark Mode**: Automatic light/dark theme support
+- **Dark Mode**: Hybrid theme system (System/Light/Dark) with manual toggle
 - **Error Handling**: Comprehensive error handling with retry functionality
 - **Pull to Refresh**: Refresh movie lists with pull-to-refresh gesture
 
@@ -48,6 +50,39 @@ A React Native mobile application built with Expo SDK 54 that displays Popular a
    - Press `i` for iOS simulator
    - Press `a` for Android emulator
    - Scan QR code with Expo Go app on physical device
+
+## Advanced Features
+
+### Play Movie Trailers
+
+The app supports playing movie trailers from YouTube and Vimeo. When viewing a movie detail, if a trailer is available, a "Play Trailer" button will appear. Tapping it opens the trailer in your default browser.
+
+**Implementation**:
+- Fetches videos from TMDB `/movie/{id}/videos` endpoint
+- Filters for trailers from YouTube/Vimeo
+- Opens in browser using `Linking.openURL()`
+
+### Sync Saved Movies to TMDB Lists (Optional)
+
+The app can sync your saved movies to a TMDB List, allowing you to access them from any device or the TMDB website.
+
+**Setup** (Optional):
+1. Get a TMDB session ID:
+   - Authenticate with TMDB API (requires user account)
+   - Obtain a `session_id` from TMDB authentication flow
+2. Store the session ID:
+   ```javascript
+   // In your app code or via a settings screen
+   await AsyncStorage.setItem('@collars_movies:tmdb_session_id', 'your_session_id');
+   ```
+
+**How it works**:
+- When you save a movie, it's stored locally first
+- If a `session_id` is available, the app creates/uses a TMDB List
+- Saved movies are automatically synced to the TMDB List
+- Works offline: operations are queued and synced when online
+
+**Note**: Without a `session_id`, the app works in local-only mode, storing movies only on the device.
 
 ## Testing
 

@@ -14,7 +14,15 @@ import type {
   TMDBSearchResponseDTO,
   TMDBMovieDetailDTO,
   TMDBGenresResponseDTO,
+  TMDBVideosResponseDTO,
+  TMDBCreateListRequestDTO,
+  TMDBCreateListResponseDTO,
+  TMDBAddToListRequestDTO,
+  TMDBAddToListResponseDTO,
+  TMDBRemoveFromListRequestDTO,
+  TMDBRemoveFromListResponseDTO,
 } from '../../domain/movie/movie.dto';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger } from '../../utils/logger';
 
 const API_KEY = process.env.EXPO_PUBLIC_TMDB_API_KEY;
@@ -195,5 +203,152 @@ export async function fetchMovieDetail(
   logger.debug('Fetching movie detail', { id });
   const response = await fetchWithTimeout(url);
   return handleResponse<TMDBMovieDetailDTO>(response);
+}
+
+/**
+ * Fetches videos (trailers) for a movie
+ */
+export async function fetchMovieVideos(
+  id: number
+): Promise<TMDBVideosResponseDTO> {
+  const url = `${TMDB_ENDPOINTS.MOVIE_VIDEOS(id)}?api_key=${API_KEY}`;
+  logger.debug('Fetching movie videos', { id });
+  const response = await fetchWithTimeout(url);
+  return handleResponse<TMDBVideosResponseDTO>(response);
+}
+
+/**
+ * Gets or creates a user's saved movies list
+ * Returns the list ID
+ */
+export async function getOrCreateSavedMoviesList(
+  sessionId?: string
+): Promise<number> {
+  const STORAGE_KEY = '@collars_movies:tmdb_list_id';
+  
+  // If no sessionId, return a placeholder (local-only mode)
+  if (!sessionId) {
+    logger.debug('No session ID provided, using local-only mode');
+    return 0; // 0 indicates local-only
+  }
+
+  // Check if we already have a list ID stored
+  try {
+    const storedListId = await AsyncStorage.getItem(STORAGE_KEY);
+    if (storedListId) {
+      const listId = parseInt(storedListId, 10);
+      if (listId > 0) {
+        logger.debug('Using existing list ID', { listId });
+        return listId;
+      }
+    }
+  } catch (error) {
+    logger.warn('Failed to read stored list ID', { error });
+  }
+
+  // Create a new list
+  try {
+    const url = `${TMDB_ENDPOINTS.CREATE_LIST}?api_key=${API_KEY}&session_id=${sessionId}`;
+    const body: TMDBCreateListRequestDTO = {
+      name: 'My Saved Movies',
+      description: 'Movies saved in Collars Movies app',
+      language: 'en',
+    };
+
+    logger.debug('Creating new TMDB list');
+    const response = await fetchWithTimeout(url, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+
+    const result = await handleResponse<TMDBCreateListResponseDTO>(response);
+    
+    if (result.success && result.list_id) {
+      // Store the list ID for future use
+      await AsyncStorage.setItem(STORAGE_KEY, result.list_id.toString());
+      logger.debug('Created new TMDB list', { listId: result.list_id });
+      return result.list_id;
+    }
+
+    throw new TMDBError(
+      TMDBErrorCode.UNKNOWN,
+      result.status_message || 'Failed to create list',
+      result.status_code
+    );
+  } catch (error) {
+    logger.error('Failed to create TMDB list', { error });
+    // Return 0 to indicate local-only mode
+    return 0;
+  }
+}
+
+/**
+ * Adds a movie to TMDB list
+ */
+export async function addMovieToList(
+  listId: number,
+  movieId: number,
+  sessionId?: string
+): Promise<void> {
+  if (!listId || !sessionId) {
+    // Local-only mode, operation will be queued
+    logger.debug('Local-only mode: operation queued', { movieId });
+    return;
+  }
+
+  const url = `${TMDB_ENDPOINTS.ADD_TO_LIST(listId.toString())}?api_key=${API_KEY}&session_id=${sessionId}`;
+  const body: TMDBAddToListRequestDTO = {
+    media_id: movieId,
+  };
+
+  logger.debug('Adding movie to list', { listId, movieId });
+  const response = await fetchWithTimeout(url, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+  
+  const result = await handleResponse<TMDBAddToListResponseDTO>(response);
+  if (!result.success) {
+    throw new TMDBError(
+      TMDBErrorCode.UNKNOWN,
+      result.status_message || 'Failed to add movie to list',
+      result.status_code
+    );
+  }
+}
+
+/**
+ * Removes a movie from TMDB list
+ */
+export async function removeMovieFromList(
+  listId: number,
+  movieId: number,
+  sessionId?: string
+): Promise<void> {
+  if (!listId || !sessionId) {
+    // Local-only mode, operation will be queued
+    logger.debug('Local-only mode: operation queued', { movieId });
+    return;
+  }
+
+  const url = `${TMDB_ENDPOINTS.REMOVE_FROM_LIST(listId.toString())}?api_key=${API_KEY}&session_id=${sessionId}`;
+  const body: TMDBRemoveFromListRequestDTO = {
+    media_id: movieId,
+  };
+
+  logger.debug('Removing movie from list', { listId, movieId });
+  const response = await fetchWithTimeout(url, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+  
+  const result = await handleResponse<TMDBRemoveFromListResponseDTO>(response);
+  if (!result.success) {
+    throw new TMDBError(
+      TMDBErrorCode.UNKNOWN,
+      result.status_message || 'Failed to remove movie from list',
+      result.status_code
+    );
+  }
 }
 
