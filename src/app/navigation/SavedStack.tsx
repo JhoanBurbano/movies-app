@@ -38,7 +38,7 @@ export function SavedStack() {
           headerTintColor: theme.colors.text,
           headerTitleStyle: {
             color: theme.colors.text,
-            fontWeight: '600',
+            fontWeight: theme.typography.weights.semibold,
           },
         }}
       />
@@ -55,7 +55,7 @@ export function SavedStack() {
           headerTintColor: theme.colors.text,
           headerTitleStyle: {
             color: theme.colors.text,
-            fontWeight: '600',
+            fontWeight: theme.typography.weights.semibold,
           },
         }}
       />

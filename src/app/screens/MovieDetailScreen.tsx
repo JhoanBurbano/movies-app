@@ -238,7 +238,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             alignItems: 'center',
         },
         starIcon: {
-            marginRight: 4,
+            marginRight: theme.spacing.xs,
         },
         metaText: {
             ...theme.typography.bodySmall,
@@ -296,10 +296,10 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         },
         saveButtonText: {
             ...theme.typography.button,
-            color: '#FFFFFF',
+            color: theme.colors.textOnDark,
         },
         saveButtonTextActive: {
-            color: '#FFFFFF',
+            color: theme.colors.textOnDark,
         },
         errorText: {
             ...theme.typography.body,

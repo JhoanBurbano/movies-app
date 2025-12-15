@@ -116,7 +116,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             padding: theme.spacing.lg,
             width: '100%',
             maxWidth: 400,
-            shadowColor: '#000',
+            shadowColor: theme.colors.shadow,
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 8,

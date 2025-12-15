@@ -71,7 +71,7 @@ export function ThemeToggle() {
               <Ionicons
                 name={option.iconName}
                 size={18}
-                color={themeMode === option.mode ? '#FFFFFF' : theme.colors.text}
+                color={themeMode === option.mode ? theme.colors.textOnDark : theme.colors.text}
                 style={styles.optionIcon}
               />
               <Text
@@ -130,11 +130,11 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
     optionText: {
       ...theme.typography.bodySmall,
       color: theme.colors.text,
-      fontWeight: '500',
+      fontWeight: theme.typography.weights.medium,
     },
     optionTextActive: {
-      color: '#FFFFFF',
-      fontWeight: '600',
+      color: theme.colors.textOnDark,
+      fontWeight: theme.typography.weights.semibold,
     },
   });
 }

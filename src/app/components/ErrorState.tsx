@@ -79,7 +79,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
     },
     buttonText: {
       ...theme.typography.button,
-      color: '#FFFFFF',
+      color: theme.colors.textOnDark,
     },
   });
 }

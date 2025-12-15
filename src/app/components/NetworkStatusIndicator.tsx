@@ -22,7 +22,7 @@ export function NetworkStatusIndicator() {
 
     return (
         <View style={styles.container}>
-            <Ionicons name="wifi-outline" size={16} color="#FFFFFF" style={styles.icon} />
+            <Ionicons name="wifi-outline" size={16} color={theme.colors.textOnDark} style={styles.icon} />
             <Text style={styles.text}>Offline</Text>
         </View>
     );
@@ -47,8 +47,8 @@ function createStyles(
         },
         text: {
             ...theme.typography.caption,
-            color: '#FFFFFF',
-            fontWeight: '600',
+            color: theme.colors.textOnDark,
+            fontWeight: theme.typography.weights.semibold,
         },
     });
 }

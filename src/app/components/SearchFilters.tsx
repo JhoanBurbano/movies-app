@@ -157,7 +157,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
             >
                 <Animated.View style={animatedStyle}>
                     <TouchableOpacity
-                        style={[styles.filterButton, filters.year && styles.filterButtonActive]}
+                        style={[styles.filterButton, filters.year ? styles.filterButtonActive : undefined]}
                         onPress={() => handleFilterPress('year')}
                     >
                         <Ionicons
@@ -168,7 +168,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
                         <Text
                             style={[
                                 styles.filterText,
-                                filters.year && styles.filterTextActive,
+                                filters.year ? styles.filterTextActive : undefined,
                             ]}
                         >
                             {filters.year || 'Year'}
@@ -178,7 +178,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
 
                 <Animated.View style={animatedStyle}>
                     <TouchableOpacity
-                        style={[styles.filterButton, filters.genre && styles.filterButtonActive]}
+                        style={[styles.filterButton, filters.genre ? styles.filterButtonActive : undefined]}
                         onPress={() => handleFilterPress('genre')}
                         disabled={loadingGenres}
                     >
@@ -190,7 +190,7 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
                         <Text
                             style={[
                                 styles.filterText,
-                                filters.genre && styles.filterTextActive,
+                                filters.genre ? styles.filterTextActive : undefined,
                             ]}
                             numberOfLines={1}
                         >
@@ -404,11 +404,11 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         filterText: {
             ...theme.typography.caption,
             color: theme.colors.textSecondary,
-            fontSize: 13,
+            fontSize: 13, // Slightly larger than caption for readability
         },
         filterTextActive: {
             color: theme.colors.primary,
-            fontWeight: '600',
+            fontWeight: theme.typography.weights.semibold,
         },
         clearButton: {
             flexDirection: 'row',
@@ -422,12 +422,12 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         clearText: {
             ...theme.typography.caption,
             color: theme.colors.error,
-            fontSize: 13,
-            fontWeight: '600',
+            fontSize: 13, // Slightly larger than caption for readability
+            fontWeight: theme.typography.weights.semibold,
         },
         modalOverlay: {
             flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: theme.colors.overlay,
             justifyContent: 'flex-end',
         },
         modalContent: {
@@ -446,9 +446,8 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             borderBottomColor: theme.colors.border,
         },
         modalTitle: {
-            ...theme.typography.heading,
+            ...theme.typography.h3,
             color: theme.colors.text,
-            fontSize: 18,
         },
         modalItem: {
             flexDirection: 'row',
@@ -467,7 +466,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         },
         modalItemTextActive: {
             color: theme.colors.primary,
-            fontWeight: '600',
+            fontWeight: theme.typography.weights.semibold,
         },
         loadingContainer: {
             padding: theme.spacing.lg,

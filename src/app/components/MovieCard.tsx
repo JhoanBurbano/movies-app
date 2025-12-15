@@ -10,7 +10,7 @@ import {
     StyleSheet,
 } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
-import Animated, { 
+import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withTiming,
@@ -26,7 +26,7 @@ interface MovieCardProps {
     index?: number;
 }
 
-export const MovieCard = memo<MovieCardProps>(({ movie, onPress, index = 0 }) => {
+export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
     const theme = useTheme();
     const { isConnected } = useNetworkStatus();
     const [cachedImageUri, setCachedImageUri] = useState<string | null>(null);
@@ -82,33 +82,33 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress, index = 0 }) =>
                 activeOpacity={1}
             >
                 <Animated.View style={animatedStyle}>
-            <View style={styles.posterContainer}>
-                {imageUri ? (
-                    <ExpoImage
-                        source={{ uri: imageUri }}
-                        style={styles.poster}
-                        contentFit="cover"
-                        transition={200}
-                        placeholderContentFit="cover"
-                        cachePolicy={isConnected ? 'memory-disk' : 'disk'}
-                    />
-                ) : (
-                    <View style={[styles.poster, styles.placeholder]}>
-                        <Text style={styles.placeholderText}>No Image</Text>
+                    <View style={styles.posterContainer}>
+                        {imageUri ? (
+                            <ExpoImage
+                                source={{ uri: imageUri }}
+                                style={styles.poster}
+                                contentFit="cover"
+                                transition={200}
+                                placeholderContentFit="cover"
+                                cachePolicy={isConnected ? 'memory-disk' : 'disk'}
+                            />
+                        ) : (
+                            <View style={[styles.poster, styles.placeholder]}>
+                                <Text style={styles.placeholderText}>No Image</Text>
+                            </View>
+                        )}
+                        <View style={styles.ratingBadge}>
+                            <Text style={styles.ratingText}>
+                                {movie.rating.toFixed(1)}
+                            </Text>
+                        </View>
                     </View>
-                )}
-                <View style={styles.ratingBadge}>
-                    <Text style={styles.ratingText}>
-                        {movie.rating.toFixed(1)}
-                    </Text>
-                </View>
-            </View>
-            <View style={styles.info}>
-                <Text style={styles.title} numberOfLines={2}>
-                    {movie.title}
-                </Text>
-                <Text style={styles.year}>{year}</Text>
-            </View>
+                    <View style={styles.info}>
+                        <Text style={styles.title} numberOfLines={2}>
+                            {movie.title}
+                        </Text>
+                        <Text style={styles.year}>{year}</Text>
+                    </View>
                 </Animated.View>
             </TouchableOpacity>
         </View>
@@ -140,7 +140,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         },
         placeholderText: {
             color: theme.colors.textSecondary,
-            fontSize: 12,
+            ...theme.typography.caption,
         },
         ratingBadge: {
             position: 'absolute',
@@ -149,12 +149,12 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             backgroundColor: theme.colors.rating,
             borderRadius: 4,
             paddingHorizontal: theme.spacing.xs,
-            paddingVertical: 2,
+            paddingVertical: theme.spacing.xs / 2,
         },
         ratingText: {
-            color: '#000000',
-            fontSize: 12,
-            fontWeight: '700',
+            color: theme.colors.textOnDark,
+            ...theme.typography.caption,
+            fontWeight: theme.typography.weights.bold,
         },
         info: {
             paddingHorizontal: theme.spacing.xs,
@@ -163,7 +163,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             ...theme.typography.bodySmall,
             color: theme.colors.text,
             marginBottom: theme.spacing.xs,
-            fontWeight: '600',
+            fontWeight: theme.typography.weights.semibold,
         },
         year: {
             ...theme.typography.caption,

@@ -107,7 +107,7 @@ export const TopRatedCard = memo<TopRatedCardProps>(({ movie, rank, onPress }) =
 
                         {/* Rating badge */}
                         <View style={styles.ratingBadge}>
-                            <Ionicons name="star" size={13} color="#000000" style={styles.starIcon} />
+                            <Ionicons name="star" size={13} color={theme.colors.textOnDark} style={styles.starIcon} />
                             <Text style={styles.ratingText}>
                                 {movie.rating.toFixed(1)}
                             </Text>
@@ -151,7 +151,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         },
         placeholderText: {
             color: theme.colors.textSecondary,
-            fontSize: 14,
+            ...theme.typography.bodySmall,
         },
         rankBadge: {
             position: 'absolute',
@@ -166,9 +166,9 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             alignItems: 'center',
         },
         rankText: {
-            color: '#FFFFFF',
+            color: theme.colors.textOnDark,
             fontSize: 30,
-            fontWeight: '800',
+            fontWeight: theme.typography.weights.extrabold,
             letterSpacing: -0.5,
         },
         ratingBadge: {
@@ -178,22 +178,22 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             backgroundColor: theme.colors.rating,
             borderRadius: 8,
             paddingHorizontal: theme.spacing.xs,
-            paddingVertical: 4,
+            paddingVertical: theme.spacing.xs / 2,
             flexDirection: 'row',
             alignItems: 'center',
-            shadowColor: '#000000',
+            shadowColor: theme.colors.shadow,
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.3,
             shadowRadius: 4,
             elevation: 5,
         },
         starIcon: {
-            marginRight: 4,
+            marginRight: theme.spacing.xs / 2,
         },
         ratingText: {
-            color: '#000000',
-            fontSize: 13,
-            fontWeight: '700',
+            color: theme.colors.textOnDark,
+            ...theme.typography.small,
+            fontWeight: theme.typography.weights.bold,
         },
         info: {
             paddingHorizontal: theme.spacing.xs,
@@ -202,13 +202,13 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             ...theme.typography.body,
             color: theme.colors.text,
             marginBottom: theme.spacing.xs,
-            fontWeight: '600',
+            fontWeight: theme.typography.weights.semibold,
             lineHeight: 20,
         },
         year: {
             ...theme.typography.caption,
             color: theme.colors.textSecondary,
-            fontSize: 13,
+            fontSize: 13, // Slightly larger than caption for readability
         },
     });
 }
