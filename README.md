@@ -2,6 +2,10 @@
 
 A React Native mobile application built with Expo SDK 54 that displays Popular and Upcoming movies from TMDB (The Movie Database) with offline save functionality.
 
+## Design
+
+UI/UX design and specifications are available in [Figma](https://www.figma.com/design/ItmNiEAICLaWCUdaODyf37/Movies-App?node-id=1-2084&t=1SmVaYYOd7mjWkZG-1).
+
 ## Features
 
 - **Movies Tab**: Browse Popular, Upcoming, and Top Rated movies in horizontal carousels
@@ -252,36 +256,86 @@ RootTabs (Bottom Tabs)
 - Image caching via `expo-image`
 
 **Theming**:
-- Uses React Native's `useColorScheme` for automatic theme detection
-- All colors via theme tokens (no hardcoded colors)
-- Supports system light/dark mode
+- Hybrid theme system: Manual toggle (Light/Dark) + System preference option
+- All colors via theme tokens (validated - no hardcoded colors)
+- Theme preference persisted in AsyncStorage
+- Smooth transitions between themes
+- Toggle accessible from navigation header
 
 ## Trade-offs & Decisions
 
 ### TypeScript Strict Mode
 - **Decision**: Enabled strict mode for type safety
 - **Trade-off**: More verbose but catches errors at compile time
-- **Benefit**: Prevents runtime errors, better IDE support
+- **Benefit**: Prevents runtime errors, better IDE support, no `any` types used
 
 ### No State Management Library
-- **Decision**: Use React hooks + custom hooks for state
+- **Decision**: Use React hooks + custom hooks for state management
 - **Trade-off**: Simpler for this app size, but could scale to Redux/Zustand if needed
-- **Benefit**: Less boilerplate, easier to understand
+- **Benefit**: Less boilerplate, easier to understand, sufficient for current complexity
+- **Note**: Custom hooks (`useMovies`, `useMovieDetail`, `useSavedMovies`) encapsulate all state logic
 
 ### AsyncStorage for Persistence
-- **Decision**: Use AsyncStorage for saved movies
-- **Trade-off**: Not suitable for large datasets, but sufficient for user's saved movies
-- **Benefit**: Simple, no external dependencies, works offline
+- **Decision**: Use AsyncStorage for saved movies and theme preference
+- **Trade-off**: Not suitable for large datasets (>10MB), but sufficient for user's saved movies
+- **Benefit**: Simple, no external dependencies, works offline, built into React Native
+- **Alternative Considered**: SQLite (overkill for this use case), Realm (adds complexity)
 
 ### Horizontal Carousels vs Vertical List
-- **Decision**: Horizontal carousels for Popular/Upcoming
-- **Trade-off**: More scrolling, but better for browsing
-- **Alternative**: Could use SectionList with horizontal sections (similar UX)
+- **Decision**: Horizontal carousels for Popular/Upcoming/Top Rated
+- **Trade-off**: More vertical scrolling, but better for browsing large collections
+- **Alternative Considered**: SectionList with horizontal sections - similar UX, chose simpler FlatList implementation
+- **Top Rated**: Special treatment with larger cards and ranking overlay (top 10 only)
 
 ### Search Implementation
 - **Decision**: Replace sections with search results when query active
 - **Trade-off**: Can't see popular/upcoming while searching
-- **Benefit**: Cleaner UI, focused search experience
+- **Benefit**: Cleaner UI, focused search experience, reduces cognitive load
+- **Filters**: Only shown when search results are active (year, genre, language)
+- **Debounce**: 400ms to balance responsiveness and API call reduction
+
+### Video Player Implementation
+- **Decision**: Use WebView with YouTube watch URL format (after error 153)
+- **Trade-off**: Opens in WebView instead of native player, but works reliably
+- **Benefit**: Avoids YouTube embedding restrictions, supports YouTube/Vimeo
+- **Alternative Considered**: Native video player (expo-av) - requires direct video URLs, not available from TMDB
+
+### Offline-First Strategy
+- **Decision**: Prioritize saved data over API calls when offline
+- **Trade-off**: Saved movies may become stale, but always accessible offline
+- **Benefit**: Full offline functionality, no network required for saved content
+- **Sync Queue**: Operations queued when offline, synced automatically when online
+- **Image Caching**: Posters cached locally for offline viewing
+
+### Network Status Detection
+- **Decision**: Single shared context (`NetworkStatusContext`) instead of multiple subscriptions
+- **Trade-off**: Slight overhead of context provider, but prevents multiple NetInfo subscriptions
+- **Benefit**: Single source of truth, better performance, consistent state across app
+- **Implementation**: Uses `@react-native-community/netinfo` with shared subscription
+
+### TMDB Lists API Sync (Optional)
+- **Decision**: Implement sync queue with optional TMDB Lists API integration
+- **Trade-off**: Requires user authentication (session_id), but works in local-only mode without it
+- **Benefit**: Can sync across devices if authenticated, graceful fallback to local-only
+- **Implementation**: Queue-based system that syncs when online and authenticated
+
+### Animation Library
+- **Decision**: Use React Native Reanimated v4 for all animations
+- **Trade-off**: Requires native build (not available in Expo Go), but provides smooth 60fps animations
+- **Benefit**: Runs on UI thread (multi-threading), smooth performance, declarative API
+- **Usage**: Subtle animations (scale on press, fade transitions) following professional UX guidelines
+
+### Testing Strategy
+- **Decision**: Unit tests for business logic (mappers, hooks) + E2E tests with Maestro
+- **Trade-off**: Not 100% coverage, but covers critical paths and user flows
+- **Benefit**: Fast unit tests, comprehensive E2E tests, maintainable test suite
+- **Coverage**: Mappers (DTO → Domain), hooks (success/error cases), E2E (all major user flows)
+
+### Theme Token Validation
+- **Decision**: Use design tokens exclusively, no hardcoded values
+- **Trade-off**: More setup initially, but ensures consistency
+- **Benefit**: Easy theme switching, consistent design, maintainable
+- **Validation**: All hardcoded colors/fonts replaced with theme tokens (documented in `THEME_VALIDATION.md`)
 
 ## Manual QA Checklist
 
@@ -412,8 +466,6 @@ The project includes `eas.json` with build profiles. For EAS builds, you may nee
 # Option 2: Use EAS secrets (recommended)
 eas secret:create --scope project --name EXPO_PUBLIC_TMDB_API_KEY --value your_api_key
 ```
-
-See `DELIVERY_GUIDE.md` for complete delivery instructions.
 
 ## License
 
