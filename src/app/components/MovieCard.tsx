@@ -36,6 +36,10 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
         ? new Date(movie.releaseDate).getFullYear()
         : 'N/A';
 
+    const currentYear = new Date().getFullYear();
+    const isNewRelease = movie.rating === 0 && year === currentYear;
+    const hasRating = movie.rating > 0;
+
     const styles = createStyles(theme);
 
     const animatedStyle = useAnimatedStyle(() => ({
@@ -98,12 +102,28 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
                                 <Text style={styles.placeholderText}>No Image</Text>
                             </View>
                         )}
-                        <View style={styles.ratingBadge}>
-                            <Ionicons name="star" size={13} color={theme.colors.shadow} style={styles.starIcon} />
-                            <Text style={styles.ratingText}>
-                                {movie.rating.toFixed(1)}
-                            </Text>
-                        </View>
+                        {(hasRating || isNewRelease) && (
+                            <View style={[
+                                styles.ratingBadge,
+                                isNewRelease && styles.newReleaseBadge
+                            ]}>
+                                {isNewRelease ? (
+                                    <>
+                                        <Ionicons name="calendar" size={12} color={theme.colors.textOnDark} style={styles.starIcon} />
+                                        <Text style={styles.ratingText}>
+                                            Estreno
+                                        </Text>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Ionicons name="star" size={13} color={theme.colors.shadow} style={styles.starIcon} />
+                                        <Text style={styles.ratingText}>
+                                            {movie.rating.toFixed(1)}
+                                        </Text>
+                                    </>
+                                )}
+                            </View>
+                        )}
                     </View>
                     <View style={styles.info}>
                         <Text style={styles.title} numberOfLines={2}>
@@ -154,6 +174,9 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             paddingVertical: theme.spacing.xs / 2,
             flexDirection: 'row',
             alignItems: 'center',
+        },
+        newReleaseBadge: {
+            backgroundColor: theme.colors.primary,
         },
         starIcon: {
             marginRight: theme.spacing.xs / 2,
