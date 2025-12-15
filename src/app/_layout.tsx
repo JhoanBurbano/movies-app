@@ -9,6 +9,7 @@ import { StatusBar } from 'expo-status-bar';
 import { RootTabs } from './navigation/RootTabs';
 import { useTheme } from '../ui/theme/theme';
 import { ThemeProvider } from '../ui/theme/ThemeContext';
+import { NetworkStatusProvider } from '../hooks/NetworkStatusContext';
 import { useSyncQueue } from '../hooks/useSyncQueue';
 import { NetworkStatusIndicator } from './components/NetworkStatusIndicator';
 import { StyleSheet, View } from 'react-native';
@@ -17,7 +18,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function RootLayout() {
     return (
         <ThemeProvider>
-            <AppContent />
+            <NetworkStatusProvider>
+                <AppContent />
+            </NetworkStatusProvider>
         </ThemeProvider>
     );
 }

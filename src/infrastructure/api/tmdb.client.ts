@@ -13,6 +13,7 @@ import type {
   TMDBMoviesResponseDTO,
   TMDBSearchResponseDTO,
   TMDBMovieDetailDTO,
+  TMDBGenresResponseDTO,
 } from '../../domain/movie/movie.dto';
 import { logger } from '../../utils/logger';
 
@@ -133,17 +134,55 @@ export async function fetchTopRatedMovies(
 }
 
 /**
- * Searches for movies
+ * Search filters interface
+ */
+export interface SearchFilters {
+  year?: number;
+  genre?: number;
+  language?: string;
+}
+
+/**
+ * Searches for movies with optional filters
  */
 export async function searchMovies(
   query: string,
-  page: number = 1
+  page: number = 1,
+  filters?: SearchFilters
 ): Promise<TMDBSearchResponseDTO> {
   const encodedQuery = encodeURIComponent(query);
-  const url = `${TMDB_ENDPOINTS.SEARCH}?api_key=${API_KEY}&query=${encodedQuery}&page=${page}`;
-  logger.debug('Searching movies', { query, page });
+  const params = new URLSearchParams({
+    api_key: API_KEY,
+    query: encodedQuery,
+    page: page.toString(),
+  });
+
+  if (filters?.year) {
+    params.append('primary_release_year', filters.year.toString());
+  }
+
+  if (filters?.genre) {
+    params.append('with_genres', filters.genre.toString());
+  }
+
+  if (filters?.language) {
+    params.append('language', filters.language);
+  }
+
+  const url = `${TMDB_ENDPOINTS.SEARCH}?${params.toString()}`;
+  logger.debug('Searching movies', { query, page, filters });
   const response = await fetchWithTimeout(url);
   return handleResponse<TMDBSearchResponseDTO>(response);
+}
+
+/**
+ * Fetches available movie genres
+ */
+export async function fetchGenres(): Promise<TMDBGenresResponseDTO> {
+  const url = `${TMDB_ENDPOINTS.GENRES}?api_key=${API_KEY}`;
+  logger.debug('Fetching genres');
+  const response = await fetchWithTimeout(url);
+  return handleResponse<TMDBGenresResponseDTO>(response);
 }
 
 /**

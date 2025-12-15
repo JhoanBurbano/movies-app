@@ -21,9 +21,15 @@ interface UseMoviesState {
     refreshing: boolean;
 }
 
+export interface SearchFilters {
+    year?: number;
+    genre?: number;
+    language?: string;
+}
+
 interface UseMoviesReturn extends UseMoviesState {
     refresh: () => Promise<void>;
-    search: (query: string) => Promise<void>;
+    search: (query: string, filters?: SearchFilters) => Promise<void>;
     clearSearch: () => void;
     retry: () => Promise<void>;
 }
@@ -98,7 +104,7 @@ export function useMovies(): UseMoviesReturn {
         }
     }, [isConnected]);
 
-    const search = useCallback(async (query: string) => {
+    const search = useCallback(async (query: string, filters?: SearchFilters) => {
         if (!query.trim()) {
             setState((prev) => ({
                 ...prev,
@@ -124,7 +130,7 @@ export function useMovies(): UseMoviesReturn {
                 error: null,
             }));
 
-            const response = await searchMovies(query, 1);
+            const response = await searchMovies(query, 1, filters);
             const results = response.results.map(mapTMDBMovieToMovie);
 
             setState((prev) => ({
@@ -137,7 +143,7 @@ export function useMovies(): UseMoviesReturn {
                 error instanceof TMDBError
                     ? getUserFriendlyMessage(error)
                     : 'Failed to search movies';
-            logger.error('Failed to search movies', { error, query });
+            logger.error('Failed to search movies', { error, query, filters });
             setState((prev) => ({
                 ...prev,
                 error: errorMessage,

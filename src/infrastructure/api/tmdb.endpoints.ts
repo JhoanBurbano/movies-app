@@ -11,5 +11,6 @@ export const TMDB_ENDPOINTS = {
   TOP_RATED: `${BASE_URL}/movie/top_rated`,
   SEARCH: `${BASE_URL}/search/movie`,
   MOVIE_DETAIL: (id: number) => `${BASE_URL}/movie/${id}`,
+  GENRES: `${BASE_URL}/genre/movie/list`,
 } as const;
 

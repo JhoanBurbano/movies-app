@@ -170,7 +170,7 @@ describe('useMovies', () => {
     });
 
     expect(result.current.searchResults[0].title).toBe('Search Result');
-    expect(mockSearchMovies).toHaveBeenCalledWith('test query', 1);
+    expect(mockSearchMovies).toHaveBeenCalledWith('test query', 1, undefined);
   });
 
   it('should clear search results when clearSearch is called', async () => {

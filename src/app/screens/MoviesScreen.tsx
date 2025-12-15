@@ -2,7 +2,7 @@
  * Movies screen - displays Popular and Upcoming movies with search
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
     View,
     StyleSheet,
@@ -21,6 +21,7 @@ import { SectionHeader } from '../components/SectionHeader';
 import { ErrorState } from '../components/ErrorState';
 import { EmptyState } from '../components/EmptyState';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
+import { SearchFilters as SearchFiltersComponent, type SearchFiltersState } from '../components/SearchFilters';
 import { useTheme } from '../../ui/theme/theme';
 import type { Movie } from '../../domain/movie/movie.types';
 
@@ -34,7 +35,12 @@ export function MoviesScreen() {
     const styles = createStyles(theme);
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [searchFilters, setSearchFilters] = useState<SearchFiltersState>({});
     const debouncedQuery = useDebounce(searchQuery, 400);
+
+    // Use refs to track previous values and avoid infinite loops
+    const prevQueryRef = useRef<string>('');
+    const prevFiltersRef = useRef<SearchFiltersState>({});
 
     const {
         popular,
@@ -50,14 +56,40 @@ export function MoviesScreen() {
         retry,
     } = useMovies();
 
-    // Trigger search when debounced query changes
-    React.useEffect(() => {
+    // Memoize filters object to avoid recreating on every render
+    const filtersMemo = useMemo(() => {
+        return {
+            year: searchFilters.year,
+            genre: searchFilters.genre,
+            language: searchFilters.language,
+        };
+    }, [searchFilters.year, searchFilters.genre, searchFilters.language]);
+
+    // Trigger search when debounced query or filters change
+    useEffect(() => {
+        const queryChanged = prevQueryRef.current !== debouncedQuery;
+        const filtersChanged =
+            prevFiltersRef.current.year !== searchFilters.year ||
+            prevFiltersRef.current.genre !== searchFilters.genre ||
+            prevFiltersRef.current.language !== searchFilters.language;
+
         if (debouncedQuery.trim()) {
-            search(debouncedQuery);
+            // Only search if query or filters actually changed
+            if (queryChanged || filtersChanged) {
+                search(debouncedQuery, filtersMemo);
+                prevQueryRef.current = debouncedQuery;
+                prevFiltersRef.current = { ...searchFilters };
+            }
         } else {
-            clearSearch();
+            // Only clear if we had a query before
+            if (prevQueryRef.current.trim()) {
+                clearSearch();
+                setSearchFilters({});
+                prevQueryRef.current = '';
+                prevFiltersRef.current = {};
+            }
         }
-    }, [debouncedQuery, search, clearSearch]);
+    }, [debouncedQuery, filtersMemo, search, clearSearch]);
 
     const handleMoviePress = useCallback(
         (movie: Movie) => {
@@ -191,7 +223,15 @@ export function MoviesScreen() {
             </View>
 
             {debouncedQuery.trim() ? (
-                <View style={styles.searchResultsContainer}>{renderSearchResults}</View>
+                <View style={styles.searchResultsContainer}>
+                    {searchResults.length > 0 && (
+                        <SearchFiltersComponent
+                            filters={searchFilters}
+                            onFiltersChange={setSearchFilters}
+                        />
+                    )}
+                    {renderSearchResults}
+                </View>
             ) : (
                 <FlatList
                     data={[

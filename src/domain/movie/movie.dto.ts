@@ -53,3 +53,7 @@ export interface TMDBSearchResponseDTO {
   total_results: number;
 }
 
+export interface TMDBGenresResponseDTO {
+  genres: TMDBGenreDTO[];
+}
+
