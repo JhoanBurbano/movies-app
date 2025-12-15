@@ -149,16 +149,13 @@ export function useMovieDetail(movieId: number): UseMovieDetailReturn {
           isSaved: false,
         }));
 
-        try {
-          await removeMovieFromStorage(movieId);
-        } catch (error) {
-          // If offline, add to sync queue
-          if (!isConnected) {
-            await addToSyncQueue('remove_movie', movieId);
-            logger.debug('Added remove to sync queue', { movieId });
-          } else {
-            throw error;
-          }
+        // Always remove from local storage first
+        await removeMovieFromStorage(movieId);
+        
+        // If offline, add to sync queue for API sync when connection is restored
+        if (!isConnected) {
+          await addToSyncQueue('remove_movie', movieId);
+          logger.debug('Added remove to sync queue', { movieId });
         }
       } else {
         const savedMovie = movieToSavedMovie(state.movie);
