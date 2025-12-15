@@ -36,7 +36,6 @@ export function VideoPlayer({ video, visible, onClose }: VideoPlayerProps) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Reset when modal closes
         if (!visible) {
             setLoading(true);
             setError(null);
@@ -55,8 +54,6 @@ export function VideoPlayer({ video, visible, onClose }: VideoPlayerProps) {
     const getYouTubeWatchUrl = (): string => {
         if (!video || video.site !== 'YouTube') return '';
         
-        // Use the format that works after error 153
-        // embeds_referring_origin=https://www.youtube.com allows embedding
         const baseUrl = `https://www.youtube.com/watch?v=${video.key}`;
         const params = new URLSearchParams({
             embeds_referring_origin: 'https://www.youtube.com',
@@ -67,7 +64,6 @@ export function VideoPlayer({ video, visible, onClose }: VideoPlayerProps) {
 
     /**
      * Creates HTML that redirects to YouTube watch page or embeds directly
-     * Using the watch URL format that works after error 153
      */
     const getYouTubeEmbedHTML = (): string => {
         if (!video || video.site !== 'YouTube') return '';
@@ -124,10 +120,8 @@ export function VideoPlayer({ video, visible, onClose }: VideoPlayerProps) {
         if (!video) return null;
 
         if (video.site === 'YouTube') {
-            // Use watch URL format that works after error 153
             return getYouTubeWatchUrl();
         } else if (video.site === 'Vimeo') {
-            // Vimeo embed URL with autoplay
             return `https://player.vimeo.com/video/${video.key}?autoplay=1&title=0&byline=0&portrait=0`;
         }
 
@@ -166,8 +160,6 @@ export function VideoPlayer({ video, visible, onClose }: VideoPlayerProps) {
         setError(null);
     };
 
-    // For YouTube, we'll show a button to open in browser
-    // For other video types, we could use expo-av if we have direct URLs
     if (!video) {
         return null;
     }

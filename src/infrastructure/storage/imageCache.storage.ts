@@ -25,7 +25,6 @@ async function ensureCacheDir(): Promise<void> {
 function getFilenameFromUrl(url: string): string {
     const urlParts = url.split('/');
     const filename = urlParts[urlParts.length - 1];
-    // Remove query params if any
     return filename.split('?')[0] || 'image.jpg';
 }
 
@@ -43,14 +42,12 @@ export async function cacheImage(url: string): Promise<string | null> {
         const filename = getFilenameFromUrl(url);
         const localPath = `${CACHE_DIR}${filename}`;
 
-        // Check if already cached
         const fileInfo = await FileSystem.getInfoAsync(localPath);
         if (fileInfo.exists) {
             logger.debug('Image already cached', { url, localPath });
             return localPath;
         }
 
-        // Download image
         logger.debug('Downloading image', { url });
         const downloadResult = await FileSystem.downloadAsync(url, localPath);
 

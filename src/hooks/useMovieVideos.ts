@@ -52,7 +52,6 @@ export function useMovieVideos(movieId: number): UseMovieVideosReturn {
 
             const response = await fetchMovieVideos(movieId);
             
-            // Filter trailers from YouTube
             const trailers = response.results.filter(
                 (video) => video.type === 'Trailer' && video.site === 'YouTube'
             );

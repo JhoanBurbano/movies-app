@@ -36,7 +36,6 @@ interface SearchFiltersProps {
     onFiltersChange: (filters: SearchFiltersState) => void;
 }
 
-// Common languages for movies
 const COMMON_LANGUAGES = [
     { code: 'en', name: 'English' },
     { code: 'es', name: 'Spanish' },
@@ -50,7 +49,6 @@ const COMMON_LANGUAGES = [
     { code: 'ru', name: 'Russian' },
 ];
 
-// Generate years from 1900 to current year
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 1899 }, (_, i) => CURRENT_YEAR - i);
 
@@ -69,7 +67,6 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
         transform: [{ scale: scale.value }],
     }));
 
-    // Load genres on mount
     useEffect(() => {
         const loadGenres = async () => {
             try {

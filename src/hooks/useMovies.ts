@@ -76,7 +76,6 @@ export function useMovies(): UseMoviesReturn {
 
             const popular = popularResponse.results.map(mapTMDBMovieToMovie);
             const upcoming = upcomingResponse.results.map(mapTMDBMovieToMovie);
-            // Limit top rated to first 10 movies
             const topRated = topRatedResponse.results
                 .slice(0, 10)
                 .map(mapTMDBMovieToMovie);

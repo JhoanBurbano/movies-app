@@ -24,7 +24,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load saved theme preference on mount
   useEffect(() => {
     const loadThemePreference = async () => {
       try {
@@ -51,7 +50,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Calculate effective theme based on mode and system preference
   const effectiveTheme: 'light' | 'dark' =
     themeMode === 'system'
       ? systemColorScheme === 'dark'
@@ -60,7 +58,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       : themeMode;
 
   if (isLoading) {
-    // Return system theme while loading
     return (
       <ThemeContext.Provider
         value={{

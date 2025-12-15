@@ -46,7 +46,6 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
         transform: [{ scale: scale.value }],
     }));
 
-    // Cache image when online
     useEffect(() => {
         if (movie.posterUrl && isConnected) {
             cacheImage(movie.posterUrl).catch(() => {
@@ -55,7 +54,6 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
         }
     }, [movie.posterUrl, isConnected]);
 
-    // Get cached image path when offline
     useEffect(() => {
         if (movie.posterUrl && !isConnected) {
             getCachedImagePath(movie.posterUrl).then((path) => {

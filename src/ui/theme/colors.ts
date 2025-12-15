@@ -17,7 +17,7 @@ export const lightColors = {
     warning: '#FF9500',
     rating: '#FFD700',
     overlay: 'rgba(0, 0, 0, 0.5)',
-    shadow: '#000000', // Shadow color
+    shadow: '#000000',
 } as const;
 
 export const darkColors = {
@@ -35,10 +35,9 @@ export const darkColors = {
     warning: '#FF9F0A',
     rating: '#FFD700',
     overlay: 'rgba(0, 0, 0, 0.7)',
-    shadow: '#000000', // Shadow color
+    shadow: '#000000',
 } as const;
 
-// Type that represents the structure of both color schemes
 export type ColorScheme = Readonly<{
     primary: string;
     primaryDark: string;

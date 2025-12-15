@@ -45,15 +45,13 @@ export function useSyncQueue() {
 
     logger.debug('Processing sync queue', { count: queue.length });
 
-    // Get or create list ID
     let listId: number | null = null;
     try {
-      const storedListId = await AsyncStorage.getItem(LIST_ID_KEY);
-      if (storedListId) {
-        listId = parseInt(storedListId, 10);
-      } else {
-        // Try to get/create list (requires sessionId)
-        const sessionId = await AsyncStorage.getItem(SESSION_ID_KEY);
+        const storedListId = await AsyncStorage.getItem(LIST_ID_KEY);
+        if (storedListId) {
+            listId = parseInt(storedListId, 10);
+        } else {
+            const sessionId = await AsyncStorage.getItem(SESSION_ID_KEY);
         if (sessionId) {
           listId = await getOrCreateSavedMoviesList(sessionId);
           if (listId && listId > 0) {
@@ -63,7 +61,6 @@ export function useSyncQueue() {
       }
     } catch (error) {
       logger.error('Failed to get/create list', { error });
-      // Continue with local-only sync if list creation fails
     }
 
     const sessionId = await AsyncStorage.getItem(SESSION_ID_KEY);
@@ -71,10 +68,8 @@ export function useSyncQueue() {
     for (const operation of queue) {
       try {
         if (operation.type === 'save_movie' && operation.data) {
-          // Save to local storage first
           await saveMovieToStorage(operation.data as SavedMovie);
           
-          // Try to sync to TMDB list if available
           if (listId && listId > 0 && sessionId) {
             try {
               await addMovieToList(listId, operation.movieId, sessionId);
@@ -84,7 +79,6 @@ export function useSyncQueue() {
                 error: apiError,
                 movieId: operation.movieId,
               });
-              // Don't remove from queue if API sync fails
               continue;
             }
           }
@@ -92,10 +86,8 @@ export function useSyncQueue() {
           await removeFromSyncQueue(operation.id);
           logger.debug('Synced save operation', { movieId: operation.movieId });
         } else if (operation.type === 'remove_movie') {
-          // Remove from local storage first
           await removeMovieFromStorage(operation.movieId);
           
-          // Try to sync to TMDB list if available
           if (listId && listId > 0 && sessionId) {
             try {
               await removeMovieFromList(listId, operation.movieId, sessionId);
@@ -105,7 +97,6 @@ export function useSyncQueue() {
                 error: apiError,
                 movieId: operation.movieId,
               });
-              // Don't remove from queue if API sync fails
               continue;
             }
           }
@@ -125,10 +116,8 @@ export function useSyncQueue() {
 
   useEffect(() => {
     if (isConnected) {
-      // Process queue when network becomes available
       processQueue();
-      // Also process periodically while connected
-      const interval = setInterval(processQueue, 30000); // Every 30 seconds
+      const interval = setInterval(processQueue, 30000);
       return () => clearInterval(interval);
     }
   }, [isConnected, processQueue]);

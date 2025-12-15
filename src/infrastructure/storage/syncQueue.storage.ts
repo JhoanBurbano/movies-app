@@ -56,7 +56,6 @@ export async function addToSyncQueue(
       retries: 0,
     };
 
-    // Check if operation already exists
     const exists = queue.some(
       (op) => op.type === type && op.movieId === movieId
     );

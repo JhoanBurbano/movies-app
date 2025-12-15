@@ -50,7 +50,6 @@ export function MovieDetailScreen() {
     const [showVideoPlayer, setShowVideoPlayer] = useState(false);
     const buttonScale = useSharedValue(1);
 
-    // Get cached poster when offline
     useEffect(() => {
         if (movie?.posterUrl && !isConnected) {
             getCachedImagePath(movie.posterUrl).then((path) => {
@@ -258,7 +257,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
         },
         heroImage: {
             width: '100%',
-            aspectRatio: 2 / 3, // Mantiene proporción típica de posters de películas
+            aspectRatio: 2 / 3,
             backgroundColor: theme.colors.surface,
         },
         content: {
