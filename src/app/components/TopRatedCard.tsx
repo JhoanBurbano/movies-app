@@ -107,7 +107,7 @@ export const TopRatedCard = memo<TopRatedCardProps>(({ movie, rank, onPress }) =
 
                         {/* Rating badge */}
                         <View style={styles.ratingBadge}>
-                            <Ionicons name="star" size={13} color={theme.colors.textOnDark} style={styles.starIcon} />
+                            <Ionicons name="star" size={13} color={theme.colors.shadow} style={styles.starIcon} />
                             <Text style={styles.ratingText}>
                                 {movie.rating.toFixed(1)}
                             </Text>
@@ -191,7 +191,7 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             marginRight: theme.spacing.xs / 2,
         },
         ratingText: {
-            color: theme.colors.textOnDark,
+            color: theme.colors.shadow,
             ...theme.typography.small,
             fontWeight: theme.typography.weights.bold,
         },

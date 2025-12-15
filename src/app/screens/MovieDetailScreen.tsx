@@ -118,13 +118,15 @@ export function MovieDetailScreen() {
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {posterUri && (
-                <ExpoImage
-                    source={{ uri: posterUri }}
-                    style={styles.heroImage}
-                    contentFit="cover"
-                    transition={200}
-                    cachePolicy={isConnected ? 'memory-disk' : 'disk'}
-                />
+                <View style={styles.heroImageContainer}>
+                    <ExpoImage
+                        source={{ uri: posterUri }}
+                        style={styles.heroImage}
+                        contentFit="contain"
+                        transition={200}
+                        cachePolicy={isConnected ? 'memory-disk' : 'disk'}
+                    />
+                </View>
             )}
 
             <View style={styles.content}>
@@ -198,7 +200,7 @@ export function MovieDetailScreen() {
                             <Ionicons
                                 name="play-circle"
                                 size={20}
-                                color={theme.colors.textOnDark}
+                                color={theme.colors.text}
                             />
                             <Text style={styles.trailerButtonText}>Play Trailer</Text>
                         </TouchableOpacity>
@@ -248,9 +250,15 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             justifyContent: 'center',
             alignItems: 'center',
         },
+        heroImageContainer: {
+            width: '100%',
+            backgroundColor: theme.colors.surface,
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+        },
         heroImage: {
             width: '100%',
-            height: 400,
+            aspectRatio: 2 / 3, // Mantiene proporción típica de posters de películas
             backgroundColor: theme.colors.surface,
         },
         content: {

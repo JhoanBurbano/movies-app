@@ -1,10 +1,15 @@
 # Collars Movies
 
+<div style="text-align: center;">
+<img src="assets/light.png" alt="icono" width="80" height="80" style="border-radius: 100px;box-shadow: 0 0 20px 2px #00000055; margin-bottom:20px;margin-right:20px"/><img src="assets/dark.png" alt="icono" width="80" height="80" style="border-radius: 12px;box-shadow: 0 0 20px 2px #00000055; margin-bottom:20px;margin-right:20px"/><img src="assets/white.png" alt="icono" width="80" height="80" style="border-radius: 12px;box-shadow: 0 0 20px 2px #00000055; margin-bottom:20px"/>
+</div>
+
 A React Native mobile application built with Expo SDK 54 that displays Popular and Upcoming movies from TMDB (The Movie Database) with offline save functionality.
 
 ## Design
 
 UI/UX design and specifications are available in [Figma](https://www.figma.com/design/ItmNiEAICLaWCUdaODyf37/Movies-App?node-id=1-2084&t=1SmVaYYOd7mjWkZG-1).
+<img src="assets/cover-movies.png" alt="cover" />
 
 ## Features
 

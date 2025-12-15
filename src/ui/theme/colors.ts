@@ -10,7 +10,7 @@ export const lightColors = {
     text: '#000000',
     textSecondary: '#666666',
     textTertiary: '#999999',
-    textOnDark: '#FFFFFF', // Text color for use on dark backgrounds
+    textOnDark: '#FFFFFF',
     border: '#E0E0E0',
     error: '#FF3B30',
     success: '#34C759',
@@ -28,7 +28,7 @@ export const darkColors = {
     text: '#FFFFFF',
     textSecondary: '#AEAEB2',
     textTertiary: '#8E8E93',
-    textOnDark: '#FFFFFF', // Text color for use on dark backgrounds
+    textOnDark: '#FFFFFF',
     border: '#38383A',
     error: '#FF453A',
     success: '#32D74B',

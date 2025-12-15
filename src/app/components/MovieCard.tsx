@@ -19,6 +19,7 @@ import type { Movie } from '../../domain/movie/movie.types';
 import { useTheme } from '../../ui/theme/theme';
 import { cacheImage, getCachedImagePath } from '../../infrastructure/storage/imageCache.storage';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
+import { Ionicons } from '@expo/vector-icons';
 
 interface MovieCardProps {
     movie: Movie;
@@ -98,6 +99,7 @@ export const MovieCard = memo<MovieCardProps>(({ movie, onPress }) => {
                             </View>
                         )}
                         <View style={styles.ratingBadge}>
+                            <Ionicons name="star" size={13} color={theme.colors.shadow} style={styles.starIcon} />
                             <Text style={styles.ratingText}>
                                 {movie.rating.toFixed(1)}
                             </Text>
@@ -150,9 +152,14 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
             borderRadius: 4,
             paddingHorizontal: theme.spacing.xs,
             paddingVertical: theme.spacing.xs / 2,
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        starIcon: {
+            marginRight: theme.spacing.xs / 2,
         },
         ratingText: {
-            color: theme.colors.textOnDark,
+            color: theme.colors.shadow,
             ...theme.typography.caption,
             fontWeight: theme.typography.weights.bold,
         },
